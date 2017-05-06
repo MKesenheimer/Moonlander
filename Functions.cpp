@@ -20,3 +20,11 @@ float getAngle(float x, float y) {
     
     return theta;
 }
+
+void seed(int n) {
+    std::srand(n);
+}
+
+float frand(float min, float max) {
+    return min + (max - min) * ((std::rand() % 1000) / 1e3);
+}

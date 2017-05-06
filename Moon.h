@@ -7,19 +7,9 @@
 class Moon : public Object {
   public:
     //the constructor
-    Moon(float x, float y, float angle, float hsize, float vsize);
+    Moon(float x, float y, float hsize, float vsize, float angle);
     //the destructor
     ~Moon();
-    
-    //gives the horizontal size
-    float hsize();
-    //gives the verticla size
-    float vsize();
-
-  private:
-    float hsize_;
-    float vsize_;
-
 };
 
 #endif

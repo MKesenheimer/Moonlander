@@ -59,7 +59,7 @@ FRM = -framework SDL2 -framework SDL2_image -framework SDL2_gfx -framework Cocoa
 
 ### USER Files ###
 USER = Main.a Timer.a Object.a Lander.a SDL2_own.a
-USER+= Functions.a Moon.a Collision.a
+USER+= Functions.a Moon.a Collision.a Part.a
 
 ########################################################################
 ## Rules

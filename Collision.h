@@ -24,10 +24,11 @@ class Collision {
     
     //calculate the distance of two objects
     float dist(Object *o1, Object *o2);
+    float dist(Object *o1, std::vector<float> point);
+    float dist(std::vector<float> point1, std::vector<float> point2);
     
   private:
     bool collided;
-
 };
 
 #endif

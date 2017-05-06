@@ -3,11 +3,14 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-Object::Object(float x, float y, float angle) {
+Object::Object(float x, float y, float hsize, float vsize, float angle, float spin) {
   x_ = x;
   y_ = y;
+  hsize_ = hsize;
+  vsize_ = vsize;
   old_phi_ = 0.0;
   phi_ = angle;
+  spin_ = spin;
   npoints_ = 0;
   new_point(x_,y_);
 }
@@ -17,6 +20,14 @@ float Object::x() {
 }
 
 float Object::y() {
+  return y_;
+}
+
+float Object::xcenter() {
+  return x_;
+}
+
+float Object::ycenter() {
   return y_;
 }
 
@@ -32,7 +43,19 @@ float Object::phi() {
   return phi_;
 }
 
-float Object::npoints() {
+float Object::spin() {
+  return spin_;
+}
+
+float Object::hsize() {
+  return hsize_;
+}
+
+float Object::vsize() {
+  return vsize_;
+}
+
+int Object::npoints() {
   return npoints_;
 }
 
@@ -52,52 +75,71 @@ void Object::set_angle(float angle) {
   //so we have to rotate only by the difference of  the old and the
   //new angle
   float dphi = (phi_ - old_phi_); //angle in rad /360.0*(2*M_PI)
-  for (int i=0; i<3*npoints_; i+=3) {
-    //the position in the unrotated coordinate system
-    float xfs = points[i+1] - x_;
-    float yfs = points[i+2] - y_;
-    
-    //rotate back into the world coordinate system
-    points[i+1] = cos(dphi)*xfs - sin(dphi)*yfs + x_;
-    points[i+2] = sin(dphi)*xfs + cos(dphi)*yfs + y_;
+  for (int i=0; i<npoints_; i++) {
+    //rotate all points
+    float xfs = points[i].x;
+    float yfs = points[i].y;
+    points[i].x = cos(dphi)*xfs - sin(dphi)*yfs;
+    points[i].y = sin(dphi)*xfs + cos(dphi)*yfs;
   }
   old_phi_ = phi_;
 }
 
-void Object::new_point(float x, float y) {
+void Object::set_spin(float spin) {
+  spin_ = spin;
+}
+
+void Object::new_point(float x, float y, bool iscol) {
   if (npoints_ == 0) {
-    points.push_back(npoints_);
-    points.push_back(x);
-    points.push_back(y);
+    //center of object
+    points.push_back(point());
+    points[0].index = npoints_;
+    points[0].x = x;
+    points[0].y = y;
+    points[0].iscollidable = iscol;
     npoints_++;
   }
   else {
-    points.push_back(npoints_);
-    //move all object points into the world coordinate system
-    points.push_back(x_ + x);
-    points.push_back(y_ + y);
+    points.push_back(point());
+    points[npoints_].index = npoints_;
+    //move all object points back into the world coordinate system
+    points[npoints_].x = hsize_*x;
+    points[npoints_].y = vsize_*y;
+    points[npoints_].iscollidable = iscol;
     npoints_++;
   }
 }
 
 std::vector<float> Object::get_point(int n) {
   std::vector<float> retv;
-  for (int i=0; i<=3*n; i+=3) {
-    if ((int)points[i] == n) {
-      retv.push_back(points[i+1]);
-      retv.push_back(points[i+2]);
+  for (int i=0; i<=n; i++) {
+    if (points[i].index == n) {
+      retv.push_back(points[i].x + x_);
+      retv.push_back(points[i].y + y_);
       return retv;
     }
   }
   std::cout<<"an error occured in Object.cpp: n="<<n<<" is not a valid index"<<std::endl;
-  return points;
+  retv.push_back(0);
+  retv.push_back(0);
+  return retv;
+}
+
+bool Object::is_collidable(int n) {
+  for (int i=0; i<=n; i++) {
+    if (points[i].index == n) {
+      return points[i].iscollidable;
+    }
+  }
+  std::cout<<"an error occured in Object.cpp: n="<<n<<" is not a valid index"<<std::endl;
+  return true;
 }
 
 void Object::modify_point(float x, float y, int n) {
-  for (int i=0; i<=3*n; i+=3) {
-    if ((int)points[i] == n) {
-      points[i+1] = x_ + x;
-      points[i+2] = y_ + y;
+  for (int i=0; i<=n; i++) {
+    if (points[i].index == n) {
+      points[i].x = hsize_*x;
+      points[i].y = vsize_*y;
     }
   }
 }
@@ -105,15 +147,8 @@ void Object::modify_point(float x, float y, int n) {
 void Object::update_position(float dt) {
   x_ = x_ + vx_*dt;
   y_ = y_ + vy_*dt;
-  update_all_points(dt);
-}
-
-void Object::update_all_points(float dt) {
+  phi_ = phi_ + spin_*dt;
   set_angle(phi_);
-  for (int i=0; i<3*npoints_; i+=3) {
-    points[i+1] = points[i+1] + vx_*dt;
-    points[i+2] = points[i+2] + vy_*dt;
-  }
 }
 
 Object::~Object() {

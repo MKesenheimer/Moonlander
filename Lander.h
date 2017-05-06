@@ -7,24 +7,14 @@
 class Lander : public Object {
   public:
     //the constructor
-    Lander(float x, float y, float angle, float hsize, float vsize);
+    Lander(float x, float y, float hsize, float vsize, float angle, float spin);
     //the destructor
     ~Lander();
-    
-    //gives the horizontal size
-    float hsize();
-    //gives the verticla size
-    float vsize();
-    
-    float xcenter();
-    float ycenter();
 
     void set_thrust(float thr);
     float thrust();
 
   private:
-    float hsize_;
-    float vsize_;
     float thrust_;
 
 };
