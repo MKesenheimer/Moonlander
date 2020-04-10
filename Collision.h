@@ -13,6 +13,7 @@ class Collision {
     //the objects formed by the points has collided
     //Note: the points should form an convex object at best
     bool check_collision(Object *o1, Object *o2);
+    // TODO: -> const Object& o1
 
     //calculates the center of the object formed by the points
     // returns the x- and y- coordinate in a vector
@@ -32,3 +33,7 @@ class Collision {
 };
 
 #endif
+
+// Look up, Scott Meyers Effectives modernes C++
+//std::shared_ptr<Class>
+//std::unique_ptr<Class>

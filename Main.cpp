@@ -6,9 +6,9 @@
 
 #define _USE_MATH_DEFINES
 #include <math.h>
-#include <SDL2/SDL.h>
-#include <SDL2_image/SDL_image.h>
-#include <SDL2_gfx/SDL2_gfxPrimitives.h>
+#include <SDL.h>
+#include <SDL_image.h>
+#include <SDL2_gfxPrimitives.h>
 
 #include "SDL2_own.h"
 #include "Main.h"
@@ -89,13 +89,13 @@ int main( int argc, char* args[] ) {
 
 	int frame = 0; //take records of frame number
 	bool cap = true; //Framecap an oder ausschalten
-    
+
     //Timer zum festlegen der FPS
 	Timer fps;
     //Timer zum errechnen der weltweit vergangenen Zeit
 	Timer worldtime;
     worldtime.start();
-    
+
     //calculate the small time between two frames in ms
     int oldTime = 0;
     int newTime = 0;
@@ -103,7 +103,7 @@ int main( int argc, char* args[] ) {
 
     //initialize random generator
     seed(time(NULL));
-    
+
 	//Start up SDL and make sure it went ok
 	if (SDL_Init(SDL_INIT_VIDEO) != 0){
 		logSDLError(std::cout, "SDL_Init");
@@ -143,7 +143,7 @@ int main( int argc, char* args[] ) {
 
     //collision detection
     Collision coll;
-    
+
 	//game mechanics
 	bool quit = false;
     bool firstcontact = true;
@@ -165,14 +165,14 @@ int main( int argc, char* args[] ) {
     float beta = 0.0; //1e-3
     //strength of stilt springs
     float omega = 1e-3;
-    
+
 	//Our event structure
 	SDL_Event e;
-    
+
 	while (!quit){
         //start the fps timer
         fps.start();
-        
+
 		//Read any events that occured, for now we'll just quit if any event occurs
 		while (SDL_PollEvent(&e)){
 			//If user closes the window
@@ -187,7 +187,7 @@ int main( int argc, char* args[] ) {
 				}
 			}
 		}
-        
+
         // handle keyboard inputs (no lags and delays!)
         const Uint8* keystate = SDL_GetKeyboardState(NULL);
         if(keystate[SDL_SCANCODE_UP]) {
@@ -210,12 +210,12 @@ int main( int argc, char* args[] ) {
                 lander.set_angle(lander.phi() + 0.15);
             }
         }
-        
+
         //if no key pressed, reduce thrust
         if(lander.thrust() > 0) {
             lander.set_thrust(lander.thrust() - 1);
         }
-        
+
         x0 = moon.x();
         y0 = moon.y();
         x = lander.x();
@@ -231,7 +231,7 @@ int main( int argc, char* args[] ) {
             dvx = -gamma*(x-x0)/pow(r,3)*dt;
             dvy = -gamma*(y-y0)/pow(r,3)*dt;
         }
-        
+
         //collision detection
         collided = coll.check_collision(&lander,&moon);
         if(collided) {
@@ -240,23 +240,23 @@ int main( int argc, char* args[] ) {
                 x1 = x;
                 y1 = y;
                 firstcontact = false;
-                
+
                 //destroy the lander if velocity is to big
                 if(sqrt(pow(vx,2)+pow(vy,2)) >= 1.0) {
                     destroyed = true;
                 }
             }
-            
+
             dvx = dvx - omega*(x-x1)*dt - fabs(beta*vx*dt);
             dvy = dvy - omega*(y-y1)*dt - fabs(beta*vy*dt);
-            
+
             //stop the lander if successful landing
             if(sqrt(pow(vx,2)+pow(vy,2)) <= 0.1 and lander.thrust() == 0) {
                 vx = 0.0;
                 vy = 0.0;
                 dvx = 0.0;
                 dvy = 0.0;
-                
+
                 //if the lander isn't upright, tilt it
                 //print(lander.phi());
                 if(lander.phi() > 0.4) {
@@ -278,29 +278,29 @@ int main( int argc, char* args[] ) {
                     lander.set_spin(0);
                 }
             }
-            
+
             //TODO: if the lander lands on a wall
-            
+
         } else {
             //reset variable which is used to remember the first contact
             firstcontact = true;
             lander.set_spin(0);
         }
-        
+
         //Rendering
 		SDL_RenderClear(renderer);
 		//Draw the background white
         boxRGBA(renderer, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 255, 255, 255, 255);
-        
+
         //draw the surface of the moon
         drawObject(&moon, renderer);
-        
+
         if(!destroyed) {
             //integration
             lander.set_v(vx+dvx,vy+dvy);
             lander.update_position(dt/50);
             drawObject(&lander, renderer);
-    
+
         } else {
             if(initparts) {
                     for (int i = 0; i < nparts; i++) {
@@ -316,14 +316,14 @@ int main( int argc, char* args[] ) {
                 drawObject(&parts[i], renderer);
             }
         }
-        
+
         //draw the dimensions of the objects
         //float r_abs1 = coll.dim(&lander);
         //float r_abs2 = coll.dim(&moon);
         //ellipseRGBA(renderer, lander.x(), lander.y(), r_abs1, r_abs1, 0, 0, 0, 255);
         //ellipseRGBA(renderer, moon.x(), moon.y(), r_abs2, r_abs2, 0, 0, 0, 255);
 		SDL_RenderPresent(renderer);
-        
+
         // Timer related stuff
         oldTime = newTime;
         newTime = worldtime.getTicks();
@@ -331,14 +331,14 @@ int main( int argc, char* args[] ) {
             dt = newTime - oldTime; // small time between two frames in ms
         }
         if(dt == 0) dt = 1;
-        
+
         //increment the frame number
         frame++;
         //apply the fps cap
 		if( (cap == true) && (fps.getTicks() < 1000/FRAMES_PER_SECOND) ) {
 			SDL_Delay( (1000/FRAMES_PER_SECOND) - fps.getTicks() );
 		}
-            
+
         //update the window caption
 		if( worldtime.getTicks() > 1000 ) {
 			std::stringstream caption;
@@ -348,7 +348,7 @@ int main( int argc, char* args[] ) {
             frame = 0;
 		}
 	}
-    
+
 	//Destroy the various items
 	cleanup(renderer, window);
 	IMG_Quit();
