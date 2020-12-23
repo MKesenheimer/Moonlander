@@ -43,7 +43,7 @@ INCLUDE = $(wildcard *.h $(UINCLUDE)/*.h)
 ########################################################################
 ## SDL
 CXX += $(shell sdl2-config --cflags)
-LDFLAGS += $(shell sdl2-config --static-libs) -lSDL2_gfx -lSDL2_image
+LDFLAGS += $(shell sdl2-config --static-libs) -lSDL2_gfx -lSDL2_image 
 
 ########################################################################
 
@@ -54,7 +54,7 @@ LDFLAGS += $(shell sdl2-config --static-libs) -lSDL2_gfx -lSDL2_image
 	$(CXX) -c -o build/$@ $<
 
 # Libraries
-LIB =
+LIB = -L. -llumax
 
 # Frameworks
 # -framework SDL_gfx 
