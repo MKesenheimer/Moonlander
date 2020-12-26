@@ -118,7 +118,7 @@ void drawObject(Object *object) {
         temp = object->get_point(i);
         int xp = (int)(temp[0]);
         int yp = (int)(temp[1]);
-        point p1{32768 - (int)(xp * xScaling), 32768 - (int)(yp * yScaling), 100*256, 115*256, 128*256};
+        point p1{32768 - (int)(xp * xScaling), 32768 - (int)(yp * yScaling), 255*256, 255*256, 150*256};
         points.push_back(p1);
         xp_old = xp;
         yp_old = yp;
