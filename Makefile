@@ -6,7 +6,7 @@ COMPILER = g++
 
 ########################################################################
 ## Flags
-FLAGS   = -g -std=c++11
+FLAGS   = -g -std=c++17
 LDFLAGS =
 PREPRO  =
 ##verbose level 1
@@ -64,7 +64,7 @@ FRM = -framework Cocoa
 ## Linker files
 
 ### USER Files ###
-USER = Main.a Timer.a Object.a Lander.a SDL2_own.a
+USER = Main.a Object.a Lander.a
 USER+= Functions.a Moon.a Collision.a Part.a
 
 ########################################################################

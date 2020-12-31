@@ -10,14 +10,12 @@
 #include <SDL_image.h>
 #include <SDL2_gfxPrimitives.h>
 
-#include "SDL2_own.h"
-#include "Main.h"
-#include "Timer.h"
+#include "SDLTools/Utilities.h"
+#include "SDLTools/Timer.h"
 #include "Lander.h"
 #include "Part.h"
 #include "Moon.h"
 #include "cleanup.h"
-#include "Functions.h"
 #include "Collision.h"
 
 #define LUMAX_OUTPUT
@@ -155,9 +153,9 @@ int main(int argc, char* args[]) {
     bool cap = true; //Framecap an oder ausschalten
 
     //Timer zum festlegen der FPS
-    Timer fps;
+    sdl::auxiliary::Timer fps;
     //Timer zum errechnen der weltweit vergangenen Zeit
-    Timer worldtime;
+    sdl::auxiliary::Timer worldtime;
     worldtime.start();
 
     //calculate the small time between two frames in ms
@@ -166,7 +164,7 @@ int main(int argc, char* args[]) {
     int dt = 0;
 
     //initialize random generator
-    seed(time(NULL));
+    sdl::auxiliary::Utilities::seed(time(NULL));
 
     //Start up SDL and make sure it went ok
     if (SDL_Init(SDL_INIT_VIDEO) != 0){
@@ -220,7 +218,7 @@ int main(int argc, char* args[]) {
     std::vector<Part> parts;
     const int nparts = 35;
     for (int i = 0; i < nparts; ++i) {
-      parts.push_back(Part(0, 0, frand(5,15), frand(5,15), frand(0,2*M_PI), frand(-0.5, 0.5)));
+      parts.push_back(Part(0, 0, sdl::auxiliary::Utilities::frand(5, 15), sdl::auxiliary::Utilities::frand(5, 15), sdl::auxiliary::Utilities::frand(0, 2*M_PI), sdl::auxiliary::Utilities::frand(-0.5, 0.5)));
       parts[i].set_v(0.0, 0.0);
     }
 
@@ -393,8 +391,8 @@ int main(int argc, char* args[]) {
             if (initparts) {
                     for (int i = 0; i < nparts; ++i) {
                         parts[i].set_pos(x,y);
-                        vx = frand(-10, 10);
-                        vy = frand(-10, 10);
+                        vx = sdl::auxiliary::Utilities::frand(-10, 10);
+                        vy = sdl::auxiliary::Utilities::frand(-10, 10);
                         parts[i].set_v(vx, vy);
                     }
                 initparts = false;
