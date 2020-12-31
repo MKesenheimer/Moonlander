@@ -6,6 +6,9 @@
 #pragma once
 #include <vector>
 
+// TODO: refactor!
+// TODO: add color to each point
+
 class Object {
   public:
     //the constructor
