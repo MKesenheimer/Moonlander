@@ -65,7 +65,7 @@ FRM = -framework Cocoa
 
 ### USER Files ###
 USER = Main.a Object.a Lander.a
-USER+= Functions.a Moon.a Collision.a Part.a
+USER+= Moon.a Collision.a Part.a Renderer.a
 
 ########################################################################
 ## Rules

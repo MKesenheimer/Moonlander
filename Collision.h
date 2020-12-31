@@ -1,6 +1,9 @@
-#ifndef COLLISION_H
-#define COLLISION_H
-
+/*
+ *  Collision.h
+ *  Created by Matthias Kesenheimer on 11.01.12.
+ *  Copyright 2012. All rights reserved.
+ */
+#pragma once
 #include <vector>
 #include "Object.h"
 
@@ -31,9 +34,3 @@ class Collision {
   private:
     bool collided;
 };
-
-#endif
-
-// Look up, Scott Meyers Effectives modernes C++
-//std::shared_ptr<Class>
-//std::unique_ptr<Class>

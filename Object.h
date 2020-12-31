@@ -1,6 +1,9 @@
-#ifndef OBJECT_H
-#define OBJECT_H
-
+/*
+ *  Object.h
+ *  Created by Matthias Kesenheimer on 11.01.12.
+ *  Copyright 2012. All rights reserved.
+ */
+#pragma once
 #include <vector>
 
 class Object {
@@ -66,5 +69,3 @@ class Object {
     float spin_;
     std::vector<point> points; //points are defined in the object coordinate system
 };
-
-#endif

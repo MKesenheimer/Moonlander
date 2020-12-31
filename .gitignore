@@ -1,5 +1,6 @@
 # Apple hidden files
 .DS_Store
+.vscode
 
 # Compiled Object files
 *.slo

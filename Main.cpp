@@ -8,15 +8,14 @@
 #include <math.h>
 #include <SDL.h>
 #include <SDL_image.h>
-#include <SDL2_gfxPrimitives.h>
 
 #include "SDLTools/Utilities.h"
 #include "SDLTools/Timer.h"
 #include "Lander.h"
 #include "Part.h"
 #include "Moon.h"
-#include "cleanup.h"
 #include "Collision.h"
+#include "Renderer.h"
 
 #define LUMAX_OUTPUT
 #ifdef LUMAX_OUTPUT
@@ -25,71 +24,9 @@ extern "C" {
 }
 #endif
 
-using namespace::std;
-
 const int SCREEN_WIDTH  = 900;
 const int SCREEN_HEIGHT = 800;
-const int FRAMES_PER_SECOND = 20;            //Fps auf 20 festlegen
-
-
-// TODO: entfernen, das ist doch blöd
-//Log an SDL error with some error message to the output stream of our choice
-void logSDLError(std::ostream &os, const std::string &msg){
-    os << msg << " error: " << SDL_GetError() << std::endl;
-}
-//Log an SDL debug output with some message to the output stream of our choice
-void logSDLDebug(std::ostream &os, const std::string &msg){
-    os << " [DEBUG]: " << msg << std::endl;
-}
-void logSDLDebug(std::ostream &os, const int msg){
-    os << " [DEBUG]: " << msg << std::endl;
-}
-
-//Loads an image into a texture on the rendering device
-SDL_Texture* loadTexture(const std::string &file, SDL_Renderer *ren){
-    SDL_Texture *texture = IMG_LoadTexture(ren, file.c_str());
-    if (texture == NULL){
-        logSDLError(std::cout, "LoadTexture");
-    }
-    return texture;
-}
-
-//Draw an SDL_Texture to an SDL_Renderer at position x, y, with some desired
-//width and height
-void renderTexture(SDL_Texture *tex, SDL_Renderer *ren, int x, int y, int w, int h){
-    //Setup the destination rectangle to be at the position we want
-    SDL_Rect dst;
-    dst.x = x;
-    dst.y = y;
-    dst.w = w;
-    dst.h = h;
-    SDL_RenderCopy(ren, tex, NULL, &dst);
-}
-
-//Draw an SDL_Texture to an SDL_Renderer at position x, y, preserving
-//the texture's width and height
-void renderTexture(SDL_Texture *tex, SDL_Renderer *ren, int x, int y){
-    int w, h;
-    SDL_QueryTexture(tex, NULL, NULL, &w, &h);
-    renderTexture(tex, ren, x, y, w, h);
-}
-
-// Draw an Object to a SDL_Renderer
-void drawObject(Object *object, SDL_Renderer *ren) {
-    std::vector<float> temp;
-    temp = object->get_point(1);
-    int xp_old = (int)(temp[0]);
-    int yp_old = (int)(temp[1]);
-    for (int i=1; i<object->npoints(); ++i) {
-        temp = object->get_point(i);
-        int xp = (int)(temp[0]);
-        int yp = (int)(temp[1]);
-        //filledEllipseRGBA(ren, xp, yp, 0, 0, 0, 0, 0, 255);
-        lineRGBA(ren, xp, yp, xp_old, yp_old, 0, 0, 0, 255);
-        xp_old = xp;
-        yp_old = yp;
-    }
-}
+const int FRAMES_PER_SECOND = 20; // Fps auf 20 festlegen
 
 #ifdef LUMAX_OUTPUT
 struct point {
@@ -168,8 +105,8 @@ int main(int argc, char* args[]) {
 
     //Start up SDL and make sure it went ok
     if (SDL_Init(SDL_INIT_VIDEO) != 0){
-        logSDLError(std::cout, "SDL_Init");
-        return 1;
+        sdl::auxiliary::Utilities::logSDLError(std::cout, "SDL_Init");
+        return -1;
     }
 
     //Setup our window and renderer, this time let's put our window in the center
@@ -177,17 +114,17 @@ int main(int argc, char* args[]) {
     SDL_Window *window = SDL_CreateWindow("Moonlander", SDL_WINDOWPOS_CENTERED,
             SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (window == NULL){
-        logSDLError(std::cout, "CreateWindow");
+        sdl::auxiliary::Utilities::logSDLError(std::cout, "CreateWindow");
         SDL_Quit();
-        return 1;
+        return -1;
     }
 
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (renderer == NULL){
-        logSDLError(std::cout, "CreateRenderer");
-        cleanup(window);
+        sdl::auxiliary::Utilities::logSDLError(std::cout, "CreateRenderer");
+        sdl::auxiliary::Utilities::cleanup(window);
         SDL_Quit();
-        return 1;
+        return -1;
     }
 
 #ifdef LUMAX_OUTPUT
@@ -200,8 +137,8 @@ int main(int argc, char* args[]) {
         lumaxHandle = Lumax_OpenDevice(1, 0);
         printf("Lumax_OpenDevice returned handle: 0x%lx\n", (unsigned long)lumaxHandle);
         if (lumaxHandle == NULL){
-            logSDLError(std::cout, "Lumax_OpenDevice");
-            cleanup(window, renderer);
+            sdl::auxiliary::Utilities::logSDLError(std::cout, "Lumax_OpenDevice");
+            sdl::auxiliary::Utilities::cleanup(window, renderer);
             SDL_Quit();
             return 1;
         }
@@ -374,7 +311,7 @@ int main(int argc, char* args[]) {
         boxRGBA(renderer, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 255, 255, 255, 255);
 
         //draw the surface of the moon
-        drawObject(&moon, renderer);
+        Renderer::drawObject(&moon, renderer);
 #ifdef LUMAX_OUTPUT
         drawObject(&moon);
 #endif
@@ -383,7 +320,7 @@ int main(int argc, char* args[]) {
             //integration
             lander.set_v(vx + dvx, vy + dvy);
             lander.update_position(dt/50);
-            drawObject(&lander, renderer);
+            Renderer::drawObject(&lander, renderer);
 #ifdef LUMAX_OUTPUT
             drawObject(&lander);
 #endif
@@ -399,7 +336,7 @@ int main(int argc, char* args[]) {
             }
             for (int i = 0; i < nparts; ++i) {
                 parts[i].update_position(dt/50);
-                drawObject(&parts[i], renderer);
+                Renderer::drawObject(&parts[i], renderer);
 #ifdef LUMAX_OUTPUT
                 drawObject(&parts[i]);
 #endif
@@ -446,7 +383,7 @@ int main(int argc, char* args[]) {
 #endif
 
     //Destroy the various items
-    cleanup(renderer, window);
+    sdl::auxiliary::Utilities::cleanup(renderer, window);
     IMG_Quit();
     SDL_Quit();
 
