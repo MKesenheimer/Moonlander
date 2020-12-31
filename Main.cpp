@@ -171,14 +171,14 @@ int main(int argc, char* args[]) {
         y = lander.y();
         vx = lander.vx();
         vy = lander.vy();
-        r = sqrt(pow(x-x0,2)+pow(y-y0,2));
+        r = sqrt(pow(x - x0, 2) + pow(y - y0, 2));
         float dvx,  dvy;
         if (r <= 2000) { // atmosphere below 2000
-            dvx = -gamma*(x-x0)/pow(r,3)*dt - fabs(alpha*vx*dt);
-            dvy = -gamma*(y-y0)/pow(r,3)*dt - fabs(alpha*vy*dt);
+            dvx = -gamma * (x - x0) / pow(r, 3) * dt - fabs(alpha * vx * dt);
+            dvy = -gamma * (y - y0) / pow(r, 3) * dt - fabs(alpha * vy * dt);
         } else {
-            dvx = -gamma*(x-x0)/pow(r,3)*dt;
-            dvy = -gamma*(y-y0)/pow(r,3)*dt;
+            dvx = -gamma * (x - x0) / pow(r, 3) * dt;
+            dvy = -gamma * (y - y0) / pow(r, 3) * dt;
         }
 
         // collision detection
@@ -191,15 +191,15 @@ int main(int argc, char* args[]) {
                 firstcontact = false;
 
                 // destroy the lander if velocity is to big
-                if (sqrt(pow(vx,2)+pow(vy,2)) >= 1.0)
+                if (sqrt(pow(vx, 2) + pow(vy, 2)) >= 1.0)
                     destroyed = true;
             }
 
-            dvx = dvx - omega*(x-x1)*dt - fabs(beta*vx*dt);
-            dvy = dvy - omega*(y-y1)*dt - fabs(beta*vy*dt);
+            dvx = dvx - omega * (x - x1) * dt - fabs(beta * vx * dt);
+            dvy = dvy - omega * (y - y1) * dt - fabs(beta * vy * dt);
 
             // stop the lander if successfully landed
-            if (sqrt(pow(vx,2)+pow(vy,2)) <= 0.1 and lander.thrust() == 0) {
+            if (sqrt(pow(vx, 2) + pow(vy, 2)) <= 0.1 && lander.thrust() == 0) {
                 vx = 0.0;
                 vy = 0.0;
                 dvx = 0.0;
