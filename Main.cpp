@@ -17,6 +17,13 @@
 #include "Collision.h"
 #include "Renderer.h"
 
+// TODO: add fuel consumption and status
+// TODO: add score: fuel left / time used
+// TODO: add colors to objects
+// TODO: add display constraints to laser output (the fragments get displayed regardless of what the laser can display)
+// TODO: add start and end splash screen
+// TODO: add more levels
+
 const int SCREEN_WIDTH  = 900;
 const int SCREEN_HEIGHT = 800;
 const int FRAMES_PER_SECOND = 20; // Fps auf 20 festlegen
@@ -82,7 +89,7 @@ int main(int argc, char* args[]) {
 
     Renderer::lumaxRenderer lumaxRenderer;
 
-    // scaling of the laser output in respect to the SDL screen
+    // scaling of the laser output in respect to the SDL screen^
     const float xScaling = (float)(LASERDIMENSION / (4 * SCREEN_WIDTH));
     const float yScaling = (float)(LASERDIMENSION / (4 * SCREEN_HEIGHT));
 #endif

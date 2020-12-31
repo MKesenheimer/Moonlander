@@ -30,6 +30,7 @@ void Renderer::addPoint(lumaxRenderer& ren, int x, int y, int r, int g, int b, f
         ren.push_back({32768 - (int)(x * xScaling), 32768 - (int)(y * yScaling), r, g, b});
 }
 
+// TODO: use the color of the object
 // Draw an Object to a SDL_Renderer
 void Renderer::drawObject(Object *object, lumaxRenderer& ren, float xScaling, float yScaling) {
     std::vector<float> temp;
