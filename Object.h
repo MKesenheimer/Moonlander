@@ -47,7 +47,7 @@ public:
     // save a new coordinate and remember the index. iscol is used to determine
     // if point should be used for collision control
     void newPoint(float x, float y, bool iscol = true);
-    void newPoint(float x, float y, int r, int g, int b, bool iscol = true);
+    void newPoint(float x, float y, int r, int g, int b, bool iscol = true); // with color
     Point getPoint(int n) const;
     std::pair<float, float> getPointXY(int n) const;
     bool isCollidable(int n) const;
