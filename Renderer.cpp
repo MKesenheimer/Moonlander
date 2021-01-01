@@ -8,12 +8,13 @@ void Renderer::drawObject(Object *object, SDL_Renderer *ren) {
     int yp_old = (int)(point.y);
     for (int i = 1; i < object->npoints(); ++i) {
         point = object->getPoint(i);
-        int xp = (int)(point.x);
-        int yp = (int)(point.y);
         //filledEllipseRGBA(ren, xp, yp, 0, 0, 0, 0, 0, 255);
-        lineRGBA(ren, xp, yp, xp_old, yp_old, 0, 0, 0, 255);
-        xp_old = xp;
-        yp_old = yp;
+        /*if (point.r == 255 && point.g == 255 && point.b == 255)
+            lineRGBA(ren, (int)point.x, (int)point.y, xp_old, yp_old, 0, 0, 0, 255);
+        else*/
+        lineRGBA(ren, (int)point.x, (int)point.y, xp_old, yp_old, point.r, point.g, point.b, 255);
+        xp_old = (int)point.x;
+        yp_old = (int)point.y;
     }
 }
 
@@ -38,11 +39,9 @@ void Renderer::drawObject(Object *object, lumaxRenderer& ren, float xScaling, fl
     addPoint(ren, xp_old, yp_old, 0, 0, 0, xScaling, yScaling); // start with a dark point
     for (int i = 1; i < object->npoints(); ++i) {
         point = object->getPoint(i);
-        float xp = point.x;
-        float yp = point.y;
-        addPoint(ren, xp, yp, 120*256, 130*256, 150*256, xScaling, yScaling);
-        xp_old = xp;
-        yp_old = yp;
+        addPoint(ren, point.x, point.y, point.r * 256, point.g * 256, point.b * 256, xScaling, yScaling);
+        xp_old = point.x;
+        yp_old = point.y;
     }
     addPoint(ren, xp_old, yp_old, 0, 0, 0, xScaling, yScaling); // end with a dark point
 }

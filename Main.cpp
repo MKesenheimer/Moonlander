@@ -19,7 +19,6 @@
 
 // TODO: add fuel consumption and status
 // TODO: add score: fuel left / time used
-// TODO: add colors to objects
 // TODO: add display constraints to laser output (the fragments get displayed regardless of what the laser can display)
 // TODO: add start and end splash screen
 // TODO: add more levels
@@ -235,7 +234,7 @@ int main(int argc, char* args[]) {
         // Rendering
         SDL_RenderClear(renderer);
         // Draw the background white
-        boxRGBA(renderer, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 255, 255, 255, 255);
+        boxRGBA(renderer, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0, 255);
 
         // draw the surface of the moon
         Renderer::drawObject(&moon, renderer);

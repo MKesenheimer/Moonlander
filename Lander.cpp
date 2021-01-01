@@ -15,8 +15,8 @@ Lander::Lander(float x, float y, float hsize, float vsize, float angle, float sp
     //fire
     newPoint( 3, 5);
     newPoint( 2, 5);
-    newPoint( 0, 5, false); //8th point is not collidable (tip of flare)
-    newPoint(-2, 5);
+    newPoint( 0, 5, 255, 0, 0, false); //8th point is not collidable (tip of flare)
+    newPoint(-2, 5, 255, 0, 0);
     newPoint( 3, 5);
     newPoint( 1, 0);
     

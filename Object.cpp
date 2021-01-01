@@ -83,7 +83,7 @@ void Object::setSpin(float spin) {
 }
 
 void Object::newPoint(float x, float y, bool iscol) {
-    newPoint(x, y, 0, 0, 0, iscol);
+    newPoint(x, y, 255, 255, 255, iscol);
 }
 
 void Object::newPoint(float x, float y, int r, int g, int b, bool iscol) {
