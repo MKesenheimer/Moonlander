@@ -68,7 +68,7 @@ void Object::setAngle(float angle) {
     // so we have to rotate only by the difference of  the old and the
     // new angle
     float dphi = (m_phi - m_oldPhi); //angle in rad /360.0*(2*M_PI)
-    for (int i=0; i<m_npoints; ++i) {
+    for (int i = 0; i < m_npoints; ++i) {
         // rotate all m_points
         float xfs = m_points[i].x;
         float yfs = m_points[i].y;
@@ -83,34 +83,33 @@ void Object::setSpin(float spin) {
 }
 
 void Object::newPoint(float x, float y, bool iscol) {
+    newPoint(x, y, 0, 0, 0, iscol);
+}
+
+void Object::newPoint(float x, float y, int r, int g, int b, bool iscol) {
+    m_points.push_back(Point());
     if (m_npoints == 0) {
         // center of object
-        m_points.push_back(point());
-        m_points[0].index = m_npoints;
         m_points[0].x = x;
         m_points[0].y = y;
-        m_points[0].iscollidable = iscol;
-        m_npoints++;
-    }
-    else {
-        m_points.push_back(point());
-        m_points[m_npoints].index = m_npoints;
+    } else {
         // move all object m_points back into the world coordinate system
         m_points[m_npoints].x = m_hsize * x;
         m_points[m_npoints].y = m_vsize * y;
-        m_points[m_npoints].iscollidable = iscol;
-        m_npoints++;
     }
+    m_points[m_npoints].r = r;
+    m_points[m_npoints].g = g;
+    m_points[m_npoints].b = b;
+    m_points[m_npoints].iscollidable = iscol;
+    m_npoints++;
 }
 
-std::pair<float, float> Object::getPoint(int n) const {
+std::pair<float, float> Object::getPointXY(int n) const {
     std::pair<float, float> retv;
-    for (int i = 0; i <= n; ++i) {
-        if (m_points[i].index == n) {
-            retv.first = m_points[i].x + m_x;
-            retv.second = m_points[i].y + m_y;
-            return retv;
-        }
+    if (n >= 0 && n < m_npoints) {
+        retv.first = m_points[n].x + m_x;
+        retv.second = m_points[n].y + m_y;
+        return retv;
     }
     std::cout << "an error occured in Object.cpp: n = " << n << " is not a valid index" << std::endl;
     retv.first = 0;
@@ -118,21 +117,25 @@ std::pair<float, float> Object::getPoint(int n) const {
     return retv;
 }
 
+Point Object::getPoint(int n) const {
+    if (n >= 0 && n < m_npoints)
+        return m_points[n];
+    std::cout << "an error occured in Object.cpp: n = " << n << " is not a valid index" << std::endl;
+    return Point();
+}
+
+
 bool Object::isCollidable(int n) const {
-    for (int i=0; i<=n; ++i) {
-        if (m_points[i].index == n)
-            return m_points[i].iscollidable;
-    }
+    if (n >= 0 && n < m_npoints)
+        return m_points[n].iscollidable;
     std::cout << "an error occured in Object.cpp: n = " << n << " is not a valid index" << std::endl;
     return true;
 }
 
 void Object::modifyPoint(float x, float y, int n) {
-    for (int i = 0; i <= n; ++i) {
-        if (m_points[i].index == n) {
-            m_points[i].x = m_hsize * x;
-            m_points[i].y = m_vsize * y;
-        }
+    if (n >= 0 && n < m_npoints) {
+        m_points[n].x = m_hsize * x;
+        m_points[n].y = m_vsize * y;
     }
 }
 

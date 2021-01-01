@@ -6,6 +6,7 @@
 #pragma once
 #include <tuple>
 #include <vector>
+#include "Point.h"
 
 // TODO: add color to each point
 
@@ -46,7 +47,9 @@ public:
     // save a new coordinate and remember the index. iscol is used to determine
     // if point should be used for collision control
     void newPoint(float x, float y, bool iscol = true);
-    std::pair<float, float> getPoint(int n) const;
+    void newPoint(float x, float y, int r, int g, int b, bool iscol = true);
+    Point getPoint(int n) const;
+    std::pair<float, float> getPointXY(int n) const;
     bool isCollidable(int n) const;
     void modifyPoint(float x, float y, int n);
 
@@ -62,12 +65,5 @@ private:
     // whenever save_point() is called, we increment this numbers
     int m_npoints;
     float m_spin;
-
-    struct point {
-        int index;
-        float x;
-        float y;
-        bool iscollidable;
-    };
-    std::vector<point> m_points; // points are defined in the object coordinate system
+    std::vector<Point> m_points; // points are defined in the object coordinate system
 };
