@@ -105,23 +105,26 @@ void Object::newPoint(float x, float y, int r, int g, int b, bool iscol) {
 }
 
 std::pair<float, float> Object::getPointXY(int n) const {
-    std::pair<float, float> retv;
+    std::pair<float, float> point;
     if (n >= 0 && n < m_npoints) {
-        retv.first = m_points[n].x + m_x;
-        retv.second = m_points[n].y + m_y;
-        return retv;
+        point.first = m_points[n].x + m_x;
+        point.second = m_points[n].y + m_y;
+        return point;
     }
     std::cout << "an error occured in Object.cpp: n = " << n << " is not a valid index" << std::endl;
-    retv.first = 0;
-    retv.second = 0;
-    return retv;
+    return point;
 }
 
 Point Object::getPoint(int n) const {
-    if (n >= 0 && n < m_npoints)
-        return m_points[n];
+    Point point;
+    if (n >= 0 && n < m_npoints) {
+        point = m_points[n];
+        point.x = point.x + m_x;
+        point.y = point.y + m_y;
+        return point;
+    }
     std::cout << "an error occured in Object.cpp: n = " << n << " is not a valid index" << std::endl;
-    return Point();
+    return point;
 }
 
 

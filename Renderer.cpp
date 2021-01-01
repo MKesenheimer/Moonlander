@@ -3,14 +3,13 @@
 
 // Draw an Object to a SDL_Renderer
 void Renderer::drawObject(Object *object, SDL_Renderer *ren) {
-    std::pair<float, float> temp;
-    temp = object->getPointXY(1);
-    int xp_old = (int)(temp.first);
-    int yp_old = (int)(temp.second);
-    for (int i=1; i<object->npoints(); ++i) {
-        temp = object->getPointXY(i);
-        int xp = (int)(temp.first);
-        int yp = (int)(temp.second);
+    Point point = object->getPoint(1);
+    int xp_old = (int)(point.x);
+    int yp_old = (int)(point.y);
+    for (int i = 1; i < object->npoints(); ++i) {
+        point = object->getPoint(i);
+        int xp = (int)(point.x);
+        int yp = (int)(point.y);
         //filledEllipseRGBA(ren, xp, yp, 0, 0, 0, 0, 0, 255);
         lineRGBA(ren, xp, yp, xp_old, yp_old, 0, 0, 0, 255);
         xp_old = xp;
@@ -19,29 +18,28 @@ void Renderer::drawObject(Object *object, SDL_Renderer *ren) {
 }
 
 #ifdef LUMAX_OUTPUT
-void Renderer::addPoint(lumaxRenderer& ren, int x, int y, int r, int g, int b, float xScaling, float yScaling) {
+void Renderer::addPoint(lumaxRenderer& ren, float x, float y, int r, int g, int b, float xScaling, float yScaling) {
     if (!mirrorXAxis && !mirrorYAxis)
-        ren.push_back({(int)(x * xScaling), (int)(y * yScaling), r, g, b});
+        ren.push_back({x * xScaling, y * yScaling, r, g, b});
     else if (!mirrorXAxis && mirrorYAxis)
-        ren.push_back({(int)(x * xScaling), 32768 - (int)(y * yScaling), r, g, b});
+        ren.push_back({x * xScaling, LASERDIMENSION / 2 - (y * yScaling), r, g, b});
     else if (mirrorXAxis && !mirrorYAxis)
-        ren.push_back({32768 - (int)(x * xScaling), (int)(y * yScaling), r, g, b});
+        ren.push_back({LASERDIMENSION / 2 - (x * xScaling), y * yScaling, r, g, b});
     else if (mirrorXAxis && mirrorYAxis)
-        ren.push_back({32768 - (int)(x * xScaling), 32768 - (int)(y * yScaling), r, g, b});
+        ren.push_back({LASERDIMENSION / 2 - (x * xScaling), LASERDIMENSION / 2 - (y * yScaling), r, g, b});
 }
 
 // TODO: use the color of the object
 // Draw an Object to a SDL_Renderer
 void Renderer::drawObject(Object *object, lumaxRenderer& ren, float xScaling, float yScaling) {
-    std::pair<float, float> temp;
-    temp = object->getPointXY(1);
-    int xp_old = (int)(temp.first);
-    int yp_old = (int)(temp.second);
+    Point point = object->getPoint(1);
+    float xp_old = point.x;
+    float yp_old = point.y;
     addPoint(ren, xp_old, yp_old, 0, 0, 0, xScaling, yScaling); // start with a dark point
     for (int i = 1; i < object->npoints(); ++i) {
-        temp = object->getPointXY(i);
-        int xp = (int)(temp.first);
-        int yp = (int)(temp.second);
+        point = object->getPoint(i);
+        float xp = point.x;
+        float yp = point.y;
         addPoint(ren, xp, yp, 120*256, 130*256, 150*256, xScaling, yScaling);
         xp_old = xp;
         yp_old = yp;
@@ -55,8 +53,8 @@ int Renderer::sendPointsToLumax(void *lumaxHandle, lumaxRenderer& ren) {
     size_t numOfPoints = ren.size();
     TLumax_Point points[numOfPoints];
     for (int i = 0; i < numOfPoints; ++i) {
-        points[i].Ch1 = ren[i].x;
-        points[i].Ch2 = ren[i].y;
+        points[i].Ch1 = static_cast<int>(ren[i].x);
+        points[i].Ch2 = static_cast<int>(ren[i].y);
         points[i].Ch3 = ren[i].r;
         points[i].Ch4 = ren[i].g;
         points[i].Ch5 = ren[i].b;

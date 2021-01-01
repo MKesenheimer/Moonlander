@@ -6,6 +6,7 @@
 #pragma once
 #include <tuple>
 #include "Object.h"
+#include "Point.h"
 
 class Collision {
 public:
@@ -25,6 +26,7 @@ private:
     
     //calculate the distance of two objects
     static float dist(const Object& o1, const Object& o2);
-    static float dist(const Object& o1, const std::pair<float, float>& point);
-    static float dist(const std::pair<float, float>& point0, const std::pair<float, float>& point1);
+    static float dist(const Object& o, const Point& point);
+    static float dist(const Object& o, const std::pair<float, float>& point);
+    static float dist(const Point& point0, const Point& point1);
 };

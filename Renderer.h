@@ -4,8 +4,9 @@
  *  Copyright 2020. All rights reserved.
  */
 #pragma once
-#include "Object.h"
 #include <SDL.h>
+#include "Object.h"
+#include "Point.h"
 
 #define LUMAX_OUTPUT
 #ifdef LUMAX_OUTPUT
@@ -23,18 +24,13 @@ class Renderer {
     static void drawObject(Object *object, SDL_Renderer *ren);
 
 #ifdef LUMAX_OUTPUT
-    struct laserPoint {
-        int x, y;
-        int r, g, b;
-    };
-
-    typedef std::vector<laserPoint> lumaxRenderer;
+    typedef std::vector<Point> lumaxRenderer;
 
     static void drawObject(Object *object, lumaxRenderer& ren, float xScaling, float yScaling);
 
     static int sendPointsToLumax(void *lumaxHandle, lumaxRenderer& ren);
 
   private:
-    static void addPoint(lumaxRenderer& ren, int x, int y, int r, int g, int b, float xScaling, float yScaling);
+    static void addPoint(lumaxRenderer& ren, float x, float y, int r, int g, int b, float xScaling, float yScaling);
 #endif
 };

@@ -13,16 +13,16 @@ bool Collision::checkCollision(const Object& o1, const Object& o2) {
         //advanced collision control
         if(dim1 <= dim2) {
             //start of line between two points
-            std::pair<float, float> start = o2.getPointXY(0);
-            for (int i=1; i<o2.npoints(); ++i) {
+            Point start = o2.getPoint(0);
+            for (int i = 1; i < o2.npoints(); ++i) {
                 //end of line
-                std::pair<float, float> end = o2.getPointXY(i);
+                Point end = o2.getPoint(i);
                 //number of points on line
                 const int nsteps = (int)(10 * dist(start, end) / dim1);
                 for (int j = 0; j < nsteps; ++j) {
                     //build new points that lay on the line
-                    float x = start.first + j * (end.first - start.first) / nsteps;
-                    float y = start.second + j * (end.second - start.second) / nsteps;
+                    float x = start.x + j * (end.x - start.x) / nsteps;
+                    float y = start.y + j * (end.y - start.y) / nsteps;
                     std::pair<float, float> check = {x, y};
                     if(dist(o1, check) <= dim1) collided = true;
                 }
@@ -30,16 +30,16 @@ bool Collision::checkCollision(const Object& o1, const Object& o2) {
             }
         } else {
             //start of line between two points
-            std::pair<float, float> start = o1.getPointXY(0);
+            Point start = o1.getPoint(0);
             for (int i = 1; i < o1.npoints(); ++i) {
                 //end of line
-                std::pair<float, float> end = o1.getPointXY(i);
+                Point end = o1.getPoint(i);
                 //number of points on line
                 const int nsteps = (int)(10 * dist(start, end) / dim2);
                 for (int j = 0; j < nsteps; ++j) {
                     //build new points that lay on the line
-                    float x = start.first + j * (end.first - start.first) / nsteps;
-                    float y = start.second + j * (end.second - start.second) / nsteps;
+                    float x = start.x + j * (end.x - start.x) / nsteps;
+                    float y = start.y + j * (end.y - start.y) / nsteps;
                     std::pair<float, float> check = {x, y};
                     if(dist(o2, check) <= dim2) collided = true;
                 }
@@ -64,8 +64,14 @@ float Collision::dist(const Object& o, const std::pair<float, float>& point) {
     return dist;
 }
 
-float Collision::dist(const std::pair<float, float>& point0, const std::pair<float, float>& point1) {
-    const float dist = sqrt(pow(point0.first - point1.first, 2) + pow(point0.second - point1.second, 2));
+float Collision::dist(const Object& o, const Point& point) {
+    const std::pair<float, float>& cen = center(o);
+    const float dist = sqrt(pow(cen.first - point.x, 2) + pow(cen.second - point.y, 2));
+    return dist;
+}
+
+float Collision::dist(const Point& point0, const Point& point1) {
+    const float dist = sqrt(pow(point0.x - point1.x, 2) + pow(point0.y - point1.y, 2));
     return dist;
 }
 
@@ -75,14 +81,13 @@ std::pair<float, float> Collision::center(const Object& o) {
 }
 
 float Collision::dim(const Object& o) {
-    std::pair<float, float> r, r0 = center(o);
+    std::pair<float, float> r0 = center(o);
     float rAbs = 0;
-    float x, y;
     for(int i = 1; i < o.npoints(); ++i) {
         if(o.isCollidable(i)) {
-            r = o.getPointXY(i);
-            x = r.first - r0.first;
-            y = r.second - r0.second;
+            Point r = o.getPoint(i);
+            float x = r.x - r0.first;
+            float y = r.y - r0.second;
             if(rAbs <= sqrt(pow(x, 2) + pow(y, 2)))
                 rAbs = sqrt(pow(x, 2) + pow(y, 2));
         }
