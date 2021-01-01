@@ -8,16 +8,12 @@
 #include "Object.h"
 
 class Lander : public Object {
-  public:
-    //the constructor
+public:
     Lander(float x, float y, float hsize, float vsize, float angle, float spin);
-    //the destructor
-    ~Lander();
 
-    void set_thrust(float thr);
-    float thrust();
+    void setThrust(float thr);
+    float thrust() const;
 
-  private:
-    float thrust_;
-
+private:
+    float m_thrust;
 };

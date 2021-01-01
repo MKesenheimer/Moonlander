@@ -8,9 +8,6 @@
 #include "Object.h"
 
 class Moon : public Object {
-  public:
-    //the constructor
+public:
     Moon(float x, float y, float hsize, float vsize, float angle);
-    //the destructor
-    ~Moon();
 };

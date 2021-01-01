@@ -3,14 +3,14 @@
 
 // Draw an Object to a SDL_Renderer
 void Renderer::drawObject(Object *object, SDL_Renderer *ren) {
-    std::vector<float> temp;
-    temp = object->get_point(1);
-    int xp_old = (int)(temp[0]);
-    int yp_old = (int)(temp[1]);
+    std::pair<float, float> temp;
+    temp = object->getPoint(1);
+    int xp_old = (int)(temp.first);
+    int yp_old = (int)(temp.second);
     for (int i=1; i<object->npoints(); ++i) {
-        temp = object->get_point(i);
-        int xp = (int)(temp[0]);
-        int yp = (int)(temp[1]);
+        temp = object->getPoint(i);
+        int xp = (int)(temp.first);
+        int yp = (int)(temp.second);
         //filledEllipseRGBA(ren, xp, yp, 0, 0, 0, 0, 0, 255);
         lineRGBA(ren, xp, yp, xp_old, yp_old, 0, 0, 0, 255);
         xp_old = xp;
@@ -33,16 +33,16 @@ void Renderer::addPoint(lumaxRenderer& ren, int x, int y, int r, int g, int b, f
 // TODO: use the color of the object
 // Draw an Object to a SDL_Renderer
 void Renderer::drawObject(Object *object, lumaxRenderer& ren, float xScaling, float yScaling) {
-    std::vector<float> temp;
-    temp = object->get_point(1);
-    int xp_old = (int)(temp[0]);
-    int yp_old = (int)(temp[1]);
+    std::pair<float, float> temp;
+    temp = object->getPoint(1);
+    int xp_old = (int)(temp.first);
+    int yp_old = (int)(temp.second);
     addPoint(ren, xp_old, yp_old, 0, 0, 0, xScaling, yScaling); // start with a dark point
     for (int i = 1; i < object->npoints(); ++i) {
-        temp = object->get_point(i);
-        int xp = (int)(temp[0]);
-        int yp = (int)(temp[1]);
-        addPoint(ren, xp, yp, 255*256, 255*256, 150*256, xScaling, yScaling);
+        temp = object->getPoint(i);
+        int xp = (int)(temp.first);
+        int yp = (int)(temp.second);
+        addPoint(ren, xp, yp, 120*256, 130*256, 150*256, xScaling, yScaling);
         xp_old = xp;
         yp_old = yp;
     }

@@ -96,18 +96,15 @@ int main(int argc, char* args[]) {
 
     // generate new objects
     Lander lander(SCREEN_WIDTH/8, 50, 2, 2, -M_PI/2, 0);
-    lander.set_v(1.0, 0.0);
+    lander.setv(1.0, 0.0);
     Moon moon(SCREEN_WIDTH/2, 3*SCREEN_HEIGHT, 2*SCREEN_WIDTH, 2*SCREEN_WIDTH, 0);
     std::vector<Part> parts;
     const int nparts = 35;
     for (int i = 0; i < nparts; ++i) {
         parts.push_back(Part(0, 0, sdl::auxiliary::Utilities::frand(5, 15), sdl::auxiliary::Utilities::frand(5, 15), 
             sdl::auxiliary::Utilities::frand(0, 2*M_PI), sdl::auxiliary::Utilities::frand(-0.5, 0.5)));
-        parts[i].set_v(0.0, 0.0);
+        parts[i].setv(0.0, 0.0);
     }
-
-    // collision detection
-    Collision coll;
 
     // game mechanics
     bool quit = false;
@@ -153,24 +150,24 @@ int main(int argc, char* args[]) {
         if (keystate[SDL_SCANCODE_UP]) {
             float vxf = lander.vx() + 0.03*sin(lander.phi());
             float vyf = lander.vy() - 0.03*cos(lander.phi());
-            lander.set_v(vxf,vyf);
+            lander.setv(vxf,vyf);
             if (lander.thrust() < 10)
-                lander.set_thrust(lander.thrust() + 3);
+                lander.setThrust(lander.thrust() + 3);
         }
         if (!collided && keystate[SDL_SCANCODE_LEFT]) {
-            // lander.set_spin(lander.spin() - 0.01);
+            // lander.setSpin(lander.spin() - 0.01);
             if (lander.phi() >= -M_PI)
-                lander.set_angle(lander.phi() - 0.15);
+                lander.setAngle(lander.phi() - 0.15);
         }
         if (!collided && keystate[SDL_SCANCODE_RIGHT]) {
-            // lander.set_spin(lander.spin() + 0.01);
+            // lander.setSpin(lander.spin() + 0.01);
             if (lander.phi() <= M_PI)
-                lander.set_angle(lander.phi() + 0.15);
+                lander.setAngle(lander.phi() + 0.15);
         }
 
         // if no key pressed, reduce thrust
         if (lander.thrust() > 0)
-            lander.set_thrust(lander.thrust() - 1);
+            lander.setThrust(lander.thrust() - 1);
 
         x0 = moon.x();
         y0 = moon.y();
@@ -189,7 +186,7 @@ int main(int argc, char* args[]) {
         }
 
         // collision detection
-        collided = coll.check_collision(&lander,&moon);
+        collided = Collision::checkCollision(lander, moon);
         if (collided) {
             // remember point of first contact
             if (firstcontact) {
@@ -214,17 +211,17 @@ int main(int argc, char* args[]) {
 
                 // if the lander isn't upright, tilt it
                 if (lander.phi() > 0.4)
-                    lander.set_spin(lander.spin() + 0.001); // fall over
+                    lander.setSpin(lander.spin() + 0.001); // fall over
                 if (lander.phi() < -0.4)
-                    lander.set_spin(lander.spin() - 0.001); // fall over
+                    lander.setSpin(lander.spin() - 0.001); // fall over
                 if (lander.phi() < 0.4 && lander.phi() > 0)
-                    lander.set_spin(lander.spin() - 0.001); // bring it to an upright position
+                    lander.setSpin(lander.spin() - 0.001); // bring it to an upright position
                 if (lander.phi() > -0.4 && lander.phi() < 0)
-                    lander.set_spin(lander.spin() + 0.001); // upright position
+                    lander.setSpin(lander.spin() + 0.001); // upright position
                 if (fabs(lander.phi()) > 1.7)
                     destroyed = true; // destroy it
                 if (fabs(lander.phi()) < 0.1)
-                    lander.set_spin(0);
+                    lander.setSpin(0);
             }
 
             // TODO: if the lander lands on a wall
@@ -232,7 +229,7 @@ int main(int argc, char* args[]) {
         } else {
             // reset variable which is used to remember the first contact
             firstcontact = true;
-            lander.set_spin(0);
+            lander.setSpin(0);
         }
 
         // Rendering
@@ -248,8 +245,8 @@ int main(int argc, char* args[]) {
 
         if (!destroyed) {
             // integration
-            lander.set_v(vx + dvx, vy + dvy);
-            lander.update_position(dt/50);
+            lander.setv(vx + dvx, vy + dvy);
+            lander.updatePosition(dt/50);
             Renderer::drawObject(&lander, renderer);
 #ifdef LUMAX_OUTPUT
             Renderer::drawObject(&lander, lumaxRenderer, xScaling, yScaling);
@@ -257,15 +254,15 @@ int main(int argc, char* args[]) {
         } else {
             if (initparts) {
                     for (int i = 0; i < nparts; ++i) {
-                        parts[i].set_pos(x, y);
+                        parts[i].setPos(x, y);
                         vx = sdl::auxiliary::Utilities::frand(-10, 10);
                         vy = sdl::auxiliary::Utilities::frand(-10, 10);
-                        parts[i].set_v(vx, vy);
+                        parts[i].setv(vx, vy);
                     }
                 initparts = false;
             }
             for (int i = 0; i < nparts; ++i) {
-                parts[i].update_position(dt/50);
+                parts[i].updatePosition(dt/50);
                 Renderer::drawObject(&parts[i], renderer);
 #ifdef LUMAX_OUTPUT
                 Renderer::drawObject(&parts[i], lumaxRenderer, xScaling, yScaling);

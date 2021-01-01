@@ -1,156 +1,144 @@
 #include "Object.h"
 #include <iostream>
 #define _USE_MATH_DEFINES
-#include <math.h>
+#include <cmath>
 
-Object::Object(float x, float y, float hsize, float vsize, float angle, float spin) {
-  x_ = x;
-  y_ = y;
-  hsize_ = hsize;
-  vsize_ = vsize;
-  old_phi_ = 0.0;
-  phi_ = angle;
-  spin_ = spin;
-  npoints_ = 0;
-  new_point(x_,y_);
+Object::Object(float x, float y, float hsize, float vsize, float angle, float spin) :
+    m_x(x), m_y(y), m_hsize(hsize), m_vsize(vsize), m_phi(angle), m_oldPhi(0.0), m_npoints(0), m_spin(spin) {
+    newPoint(m_x, m_y);
 }
 
-float Object::x() {
-  return x_;
+float Object::x() const {
+    return m_x;
 }
 
-float Object::y() {
-  return y_;
+float Object::y() const {
+    return m_y;
 }
 
-float Object::xcenter() {
-  return x_;
+float Object::xcenter() const {
+    return m_x;
 }
 
-float Object::ycenter() {
-  return y_;
+float Object::ycenter() const {
+    return m_y;
 }
 
-float Object::vx() {
-  return vx_;
+float Object::vx() const {
+    return m_vx;
 }
 
-float Object::vy() {
-  return vy_;
+float Object::vy() const {
+    return m_vy;
 }
 
-float Object::phi() {
-  return phi_;
+float Object::phi() const {
+    return m_phi;
 }
 
-float Object::spin() {
-  return spin_;
+float Object::spin() const {
+    return m_spin;
 }
 
-float Object::hsize() {
-  return hsize_;
+float Object::hsize() const {
+    return m_hsize;
 }
 
-float Object::vsize() {
-  return vsize_;
+float Object::vsize() const {
+    return m_vsize;
 }
 
-int Object::npoints() {
-  return npoints_;
+int Object::npoints() const {
+    return m_npoints;
 }
 
-void Object::set_pos(float x, float y) {
-  x_ = x;
-  y_ = y;
+void Object::setPos(float x, float y) {
+    m_x = x;
+    m_y = y;
 }
 
-void Object::set_v(float vx, float vy) {
-  vx_ = vx;
-  vy_ = vy;
+void Object::setv(float vx, float vy) {
+    m_vx = vx;
+    m_vy = vy;
 }
 
-void Object::set_angle(float angle) {
-  phi_ = angle;
-  //this algorithm rotates the object every time it is called
-  //so we have to rotate only by the difference of  the old and the
-  //new angle
-  float dphi = (phi_ - old_phi_); //angle in rad /360.0*(2*M_PI)
-  for (int i=0; i<npoints_; i++) {
-    //rotate all points
-    float xfs = points[i].x;
-    float yfs = points[i].y;
-    points[i].x = cos(dphi)*xfs - sin(dphi)*yfs;
-    points[i].y = sin(dphi)*xfs + cos(dphi)*yfs;
-  }
-  old_phi_ = phi_;
-}
-
-void Object::set_spin(float spin) {
-  spin_ = spin;
-}
-
-void Object::new_point(float x, float y, bool iscol) {
-  if (npoints_ == 0) {
-    //center of object
-    points.push_back(point());
-    points[0].index = npoints_;
-    points[0].x = x;
-    points[0].y = y;
-    points[0].iscollidable = iscol;
-    npoints_++;
-  }
-  else {
-    points.push_back(point());
-    points[npoints_].index = npoints_;
-    //move all object points back into the world coordinate system
-    points[npoints_].x = hsize_*x;
-    points[npoints_].y = vsize_*y;
-    points[npoints_].iscollidable = iscol;
-    npoints_++;
-  }
-}
-
-std::vector<float> Object::get_point(int n) {
-  std::vector<float> retv;
-  for (int i=0; i<=n; i++) {
-    if (points[i].index == n) {
-      retv.push_back(points[i].x + x_);
-      retv.push_back(points[i].y + y_);
-      return retv;
+void Object::setAngle(float angle) {
+    m_phi = angle;
+    // this algorithm rotates the object every time it is called
+    // so we have to rotate only by the difference of  the old and the
+    // new angle
+    float dphi = (m_phi - m_oldPhi); //angle in rad /360.0*(2*M_PI)
+    for (int i=0; i<m_npoints; ++i) {
+        // rotate all m_points
+        float xfs = m_points[i].x;
+        float yfs = m_points[i].y;
+        m_points[i].x = std::cos(dphi) * xfs - std::sin(dphi) * yfs;
+        m_points[i].y = std::sin(dphi) * xfs + std::cos(dphi) * yfs;
     }
-  }
-  std::cout<<"an error occured in Object.cpp: n="<<n<<" is not a valid index"<<std::endl;
-  retv.push_back(0);
-  retv.push_back(0);
-  return retv;
+    m_oldPhi = m_phi;
 }
 
-bool Object::is_collidable(int n) {
-  for (int i=0; i<=n; i++) {
-    if (points[i].index == n) {
-      return points[i].iscollidable;
+void Object::setSpin(float spin) {
+    m_spin = spin;
+}
+
+void Object::newPoint(float x, float y, bool iscol) {
+    if (m_npoints == 0) {
+        // center of object
+        m_points.push_back(point());
+        m_points[0].index = m_npoints;
+        m_points[0].x = x;
+        m_points[0].y = y;
+        m_points[0].iscollidable = iscol;
+        m_npoints++;
     }
-  }
-  std::cout<<"an error occured in Object.cpp: n="<<n<<" is not a valid index"<<std::endl;
-  return true;
-}
-
-void Object::modify_point(float x, float y, int n) {
-  for (int i=0; i<=n; i++) {
-    if (points[i].index == n) {
-      points[i].x = hsize_*x;
-      points[i].y = vsize_*y;
+    else {
+        m_points.push_back(point());
+        m_points[m_npoints].index = m_npoints;
+        // move all object m_points back into the world coordinate system
+        m_points[m_npoints].x = m_hsize * x;
+        m_points[m_npoints].y = m_vsize * y;
+        m_points[m_npoints].iscollidable = iscol;
+        m_npoints++;
     }
-  }
 }
 
-void Object::update_position(float dt) {
-  x_ = x_ + vx_*dt;
-  y_ = y_ + vy_*dt;
-  phi_ = phi_ + spin_*dt;
-  set_angle(phi_);
+std::pair<float, float> Object::getPoint(int n) const {
+    std::pair<float, float> retv;
+    for (int i = 0; i <= n; ++i) {
+        if (m_points[i].index == n) {
+            retv.first = m_points[i].x + m_x;
+            retv.second = m_points[i].y + m_y;
+            return retv;
+        }
+    }
+    std::cout << "an error occured in Object.cpp: n = " << n << " is not a valid index" << std::endl;
+    retv.first = 0;
+    retv.second = 0;
+    return retv;
 }
 
-Object::~Object() {
+bool Object::isCollidable(int n) const {
+    for (int i=0; i<=n; ++i) {
+        if (m_points[i].index == n)
+            return m_points[i].iscollidable;
+    }
+    std::cout << "an error occured in Object.cpp: n = " << n << " is not a valid index" << std::endl;
+    return true;
+}
 
+void Object::modifyPoint(float x, float y, int n) {
+    for (int i = 0; i <= n; ++i) {
+        if (m_points[i].index == n) {
+            m_points[i].x = m_hsize * x;
+            m_points[i].y = m_vsize * y;
+        }
+    }
+}
+
+void Object::updatePosition(float dt) {
+    m_x = m_x + m_vx * dt;
+    m_y = m_y + m_vy * dt;
+    m_phi = m_phi + m_spin * dt;
+    setAngle(m_phi);
 }
