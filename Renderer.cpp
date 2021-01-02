@@ -30,14 +30,14 @@ void Renderer::addPoint(LumaxRenderer& ren, float x, float y, int r, int g, int 
     const float mid = ren.maxPositions / 2;
     float xl = transform(x, 0, SCREEN_WIDTH, mid - xScaling * ren.mirrorFactX * ren.maxPositions / 2, mid + xScaling * ren.mirrorFactX * ren.maxPositions / 2);
     float yl = transform(y, SCREEN_HEIGHT, 0, mid - yScaling * ren.mirrorFactY * ren.maxPositions / 2, mid + yScaling * ren.mirrorFactY * ren.maxPositions / 2);
-    if (xl >= mid - xScaling * ren.maxPositions / 2 && xl <= mid + xScaling * ren.maxPositions / 2 &&
-        yl >= mid - yScaling * ren.maxPositions / 2 && yl <= mid + yScaling * ren.maxPositions / 2)
+    //if (xl >= mid - xScaling * ren.maxPositions / 2 && xl <= mid + xScaling * ren.maxPositions / 2 &&
+    //    yl >= mid - yScaling * ren.maxPositions / 2 && yl <= mid + yScaling * ren.maxPositions / 2)
         ren.points.push_back({xl, yl, r, g, b});
 }
 
 void Renderer::drawObject(Object *object, LumaxRenderer& ren) {
-    //if (object->xcenter() >= 0 && object->xcenter() <= SCREEN_WIDTH &&
-    //    object->ycenter() >= 0 && object->ycenter() <= SCREEN_HEIGHT) {
+    if (object->xcenter() >= 0 && object->xcenter() <= SCREEN_WIDTH &&
+        object->ycenter() >= 0 && object->ycenter() <= SCREEN_HEIGHT) {
         Point point = object->getPoint(1);
         float xp_old = point.x;
         float yp_old = point.y;
@@ -49,7 +49,7 @@ void Renderer::drawObject(Object *object, LumaxRenderer& ren) {
             yp_old = point.y;
         }
         addPoint(ren, xp_old, yp_old, 0, 0, 0, ren.scalingX, ren.scalingY); // end with a dark point
-    //}
+    }
 }
 
 int Renderer::sendPointsToLumax(void *lumaxHandle, LumaxRenderer& ren, int scanSpeed) {

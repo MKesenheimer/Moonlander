@@ -38,7 +38,7 @@ int main(int argc, char* args[]) {
     // calculate the small time between two frames in ms
     int oldTime = 0;
     int newTime = 0;
-    int dt = 0;
+    int dt = 50;
 
     // initialize random generator
     sdl::auxiliary::Utilities::seed(time(NULL));
@@ -93,14 +93,14 @@ int main(int argc, char* args[]) {
 #endif
 
     // generate new objects
-    Lander lander(SCREEN_WIDTH / 8, 50, 2, 2, -M_PI / 2, 0);
+    Lander lander(20, 20, 2, 2, -M_PI / 2, 0);
     lander.setv(1.0, 0.0);
-    Moon moon(SCREEN_WIDTH / 2, 3 * SCREEN_HEIGHT, 2 * SCREEN_WIDTH, 2 * SCREEN_WIDTH, 0);
+    Moon moon(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
     std::vector<Part> parts;
     const int nparts = 35;
     for (int i = 0; i < nparts; ++i) {
         parts.push_back(Part(0, 0, sdl::auxiliary::Utilities::frand(5, 15), sdl::auxiliary::Utilities::frand(5, 15), 
-            sdl::auxiliary::Utilities::frand(0, 2*M_PI), sdl::auxiliary::Utilities::frand(-0.5, 0.5)));
+            sdl::auxiliary::Utilities::frand(0, 2 * M_PI), sdl::auxiliary::Utilities::frand(-0.5, 0.5)));
         parts[i].setv(0.0, 0.0);
     }
 
@@ -167,8 +167,8 @@ int main(int argc, char* args[]) {
         if (lander.thrust() > 0)
             lander.setThrust(lander.thrust() - 1);
 
-        x0 = moon.x();
-        y0 = moon.y();
+        x0 = SCREEN_WIDTH / 2; // moon.x();
+        y0 = 3 * SCREEN_HEIGHT; // moon.y();
         x = lander.x();
         y = lander.y();
         vx = lander.vx();
@@ -244,7 +244,7 @@ int main(int argc, char* args[]) {
         if (!destroyed) {
             // integration
             lander.setv(vx + dvx, vy + dvy);
-            lander.updatePosition(dt/50);
+            lander.updatePosition(dt / 50);
             Renderer::drawObject(&lander, renderer);
 #ifdef LUMAX_OUTPUT
             Renderer::drawObject(&lander, lumaxRenderer);
@@ -260,7 +260,7 @@ int main(int argc, char* args[]) {
                 initparts = false;
             }
             for (int i = 0; i < nparts; ++i) {
-                parts[i].updatePosition(dt/50);
+                parts[i].updatePosition(dt / 50);
                 Renderer::drawObject(&parts[i], renderer);
 #ifdef LUMAX_OUTPUT
                 Renderer::drawObject(&parts[i], lumaxRenderer);
@@ -281,22 +281,24 @@ int main(int argc, char* args[]) {
         // Timer related stuff
         oldTime = newTime;
         newTime = worldtime.getTicks();
-        if (newTime > oldTime) {
+#ifdef VARIABLEDT
+        if (newTime > oldTime)
             dt = newTime - oldTime; // small time between two frames in ms
-        }
-        if (dt == 0) dt = 1;
+        //std::cout << dt << std::endl;
+        if (dt == 0) dt = 50;
+#endif
 
         // increment the frame number
         frame++;
         // apply the fps cap
-        if ((cap == true) && (fps.getTicks() < 1000/FRAMES_PER_SECOND) ) {
-            SDL_Delay((1000/FRAMES_PER_SECOND) - fps.getTicks() );
+        if ((cap == true) && (fps.getTicks() < 1000 / FRAMES_PER_SECOND) ) {
+            SDL_Delay((1000 / FRAMES_PER_SECOND) - fps.getTicks() );
         }
 
         // update the window caption
         if (worldtime.getTicks() > 1000 ) {
             std::stringstream caption;
-            caption << "Moonlander, aktuelle FPS: " << 1000.f*frame/worldtime.getTicks();
+            caption << "Moonlander, aktuelle FPS: " << 1000.0f * frame / worldtime.getTicks();
             SDL_SetWindowTitle(window,caption.str().c_str());
             worldtime.start();
             frame = 0;
