@@ -5,7 +5,7 @@
 #include <time.h>
 
 #define _USE_MATH_DEFINES
-#include <math.h>
+#include <cmath>
 #include <SDL.h>
 #include <SDL_image.h>
 
@@ -23,8 +23,6 @@
 // TODO: add start and end splash screen
 // TODO: add more levels
 
-const int SCREEN_WIDTH  = 900;
-const int SCREEN_HEIGHT = 800;
 const int FRAMES_PER_SECOND = 20; // Fps auf 20 festlegen
 
 int main(int argc, char* args[]) {
@@ -86,17 +84,18 @@ int main(int argc, char* args[]) {
         }
     }
 
-    Renderer::lumaxRenderer lumaxRenderer;
-
-    // scaling of the laser output in respect to the SDL screen^
-    const float xScaling = (float)(LASERDIMENSION / (4 * SCREEN_WIDTH));
-    const float yScaling = (float)(LASERDIMENSION / (4 * SCREEN_HEIGHT));
+    LumaxRenderer lumaxRenderer;
+    lumaxRenderer.mirrorFactX = -1;
+    lumaxRenderer.mirrorFactY = 1;
+    // scaling of the laser output in respect to the SDL screen
+    lumaxRenderer.scalingX = 0.3;
+    lumaxRenderer.scalingY = 0.3;
 #endif
 
     // generate new objects
-    Lander lander(SCREEN_WIDTH/8, 50, 2, 2, -M_PI/2, 0);
+    Lander lander(SCREEN_WIDTH / 8, 50, 2, 2, -M_PI / 2, 0);
     lander.setv(1.0, 0.0);
-    Moon moon(SCREEN_WIDTH/2, 3*SCREEN_HEIGHT, 2*SCREEN_WIDTH, 2*SCREEN_WIDTH, 0);
+    Moon moon(SCREEN_WIDTH / 2, 3 * SCREEN_HEIGHT, 2 * SCREEN_WIDTH, 2 * SCREEN_WIDTH, 0);
     std::vector<Part> parts;
     const int nparts = 35;
     for (int i = 0; i < nparts; ++i) {
@@ -147,8 +146,8 @@ int main(int argc, char* args[]) {
         // handle keyboard inputs (no lags and delays!)
         const uint8_t* keystate = SDL_GetKeyboardState(NULL);
         if (keystate[SDL_SCANCODE_UP]) {
-            float vxf = lander.vx() + 0.03*sin(lander.phi());
-            float vyf = lander.vy() - 0.03*cos(lander.phi());
+            float vxf = lander.vx() + 0.03 * std::sin(lander.phi());
+            float vyf = lander.vy() - 0.03 * std::cos(lander.phi());
             lander.setv(vxf,vyf);
             if (lander.thrust() < 10)
                 lander.setThrust(lander.thrust() + 3);
@@ -174,14 +173,14 @@ int main(int argc, char* args[]) {
         y = lander.y();
         vx = lander.vx();
         vy = lander.vy();
-        r = sqrt(pow(x - x0, 2) + pow(y - y0, 2));
+        r = std::sqrt(std::pow(x - x0, 2) + std::pow(y - y0, 2));
         float dvx,  dvy;
         if (r <= 2000) { // atmosphere below 2000
-            dvx = -gamma * (x - x0) / pow(r, 3) * dt - fabs(alpha * vx * dt);
-            dvy = -gamma * (y - y0) / pow(r, 3) * dt - fabs(alpha * vy * dt);
+            dvx = -gamma * (x - x0) / std::pow(r, 3) * dt - std::abs(alpha * vx * dt);
+            dvy = -gamma * (y - y0) / std::pow(r, 3) * dt - std::abs(alpha * vy * dt);
         } else {
-            dvx = -gamma * (x - x0) / pow(r, 3) * dt;
-            dvy = -gamma * (y - y0) / pow(r, 3) * dt;
+            dvx = -gamma * (x - x0) / std::pow(r, 3) * dt;
+            dvy = -gamma * (y - y0) / std::pow(r, 3) * dt;
         }
 
         // collision detection
@@ -194,15 +193,15 @@ int main(int argc, char* args[]) {
                 firstcontact = false;
 
                 // destroy the lander if velocity is to big
-                if (sqrt(pow(vx, 2) + pow(vy, 2)) >= 1.0)
+                if (std::sqrt(std::pow(vx, 2) + std::pow(vy, 2)) >= 1.0)
                     destroyed = true;
             }
 
-            dvx = dvx - omega * (x - x1) * dt - fabs(beta * vx * dt);
-            dvy = dvy - omega * (y - y1) * dt - fabs(beta * vy * dt);
+            dvx = dvx - omega * (x - x1) * dt - std::abs(beta * vx * dt);
+            dvy = dvy - omega * (y - y1) * dt - std::abs(beta * vy * dt);
 
             // stop the lander if successfully landed
-            if (sqrt(pow(vx, 2) + pow(vy, 2)) <= 0.1 && lander.thrust() == 0) {
+            if (std::sqrt(std::pow(vx, 2) + std::pow(vy, 2)) <= 0.1 && lander.thrust() == 0) {
                 vx = 0.0;
                 vy = 0.0;
                 dvx = 0.0;
@@ -217,9 +216,9 @@ int main(int argc, char* args[]) {
                     lander.setSpin(lander.spin() - 0.001); // bring it to an upright position
                 if (lander.phi() > -0.4 && lander.phi() < 0)
                     lander.setSpin(lander.spin() + 0.001); // upright position
-                if (fabs(lander.phi()) > 1.7)
+                if (std::abs(lander.phi()) > 1.7)
                     destroyed = true; // destroy it
-                if (fabs(lander.phi()) < 0.1)
+                if (std::abs(lander.phi()) < 0.1)
                     lander.setSpin(0);
             }
 
@@ -239,7 +238,7 @@ int main(int argc, char* args[]) {
         // draw the surface of the moon
         Renderer::drawObject(&moon, renderer);
 #ifdef LUMAX_OUTPUT
-        Renderer::drawObject(&moon, lumaxRenderer, xScaling, yScaling);
+        Renderer::drawObject(&moon, lumaxRenderer);
 #endif
 
         if (!destroyed) {
@@ -248,7 +247,7 @@ int main(int argc, char* args[]) {
             lander.updatePosition(dt/50);
             Renderer::drawObject(&lander, renderer);
 #ifdef LUMAX_OUTPUT
-            Renderer::drawObject(&lander, lumaxRenderer, xScaling, yScaling);
+            Renderer::drawObject(&lander, lumaxRenderer);
 #endif
         } else {
             if (initparts) {
@@ -264,7 +263,7 @@ int main(int argc, char* args[]) {
                 parts[i].updatePosition(dt/50);
                 Renderer::drawObject(&parts[i], renderer);
 #ifdef LUMAX_OUTPUT
-                Renderer::drawObject(&parts[i], lumaxRenderer, xScaling, yScaling);
+                Renderer::drawObject(&parts[i], lumaxRenderer);
 #endif
             }
         }
@@ -276,7 +275,7 @@ int main(int argc, char* args[]) {
         //ellipseRGBA(renderer, moon.x(), moon.y(), r_abs2, r_abs2, 0, 0, 0, 255);
         SDL_RenderPresent(renderer);
 #ifdef LUMAX_OUTPUT
-        Renderer::sendPointsToLumax(lumaxHandle, lumaxRenderer);
+        Renderer::sendPointsToLumax(lumaxHandle, lumaxRenderer, 2000);
 #endif
 
         // Timer related stuff
