@@ -1,5 +1,5 @@
 # Moonlander
-Remake of the Arcade Game "Lunar Lander" for a Show Laser System. If no show laser system is present, a SDL display can be used to play the game on a computer.
+Remake of the arcade game "Lunar Lander" for a show laser system. If no show laser system is present, a SDL display can be used to play the game on a computer.
 
 ## Requirements
 The SDL library must be present. On a mac, the SDL library can be installed with the following command:
