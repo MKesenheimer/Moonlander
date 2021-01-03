@@ -16,7 +16,7 @@ PREPRO  =
 ##verbose level 3
 #DEBUG  += -D DEBUGV3
 OPT     = -O2
-WARN    = -Wall
+WARN    = -Wall -Wno-missing-braces
 
 ### generate directory obj, if not yet existing
 $(shell mkdir -p build)
@@ -64,7 +64,7 @@ FRM = -framework Cocoa
 ## Linker files
 
 ### USER Files ###
-USER = Main.a Object.a Lander.a
+USER = Main.a Object.a Lander.a FuelBar.a Character.a CharString.a
 USER+= Moon.a Collision.a Part.a Renderer.a
 
 ########################################################################

@@ -7,6 +7,6 @@
 
 struct Point {
     float x, y;
-    int r, g, b;
+    int r, g, b, a;
     bool iscollidable;
 };

@@ -3,8 +3,10 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-Object::Object(float x, float y, float hsize, float vsize, float angle, float spin) :
-    m_x(x), m_y(y), m_hsize(hsize), m_vsize(vsize), m_phi(angle), m_oldPhi(0.0), m_npoints(0), m_spin(spin) {
+Object::Object(float x, float y, float hsize, float vsize, float angle, 
+    float spin, int mirrorX, int mirrorY) :
+    m_x(x), m_y(y), m_hsize(hsize), m_vsize(vsize), m_phi(angle), m_oldPhi(0.0), m_npoints(0),
+    m_spin(spin), m_mirrorX(mirrorX), m_mirrorY(mirrorY) {
     newPoint(m_x, m_y);
 }
 
@@ -83,10 +85,10 @@ void Object::setSpin(float spin) {
 }
 
 void Object::newPoint(float x, float y, bool iscol) {
-    newPoint(x, y, 255, 255, 255, iscol);
+    newPoint(x, y, 255, 255, 255, 255, iscol);
 }
 
-void Object::newPoint(float x, float y, int r, int g, int b, bool iscol) {
+void Object::newPoint(float x, float y, int r, int g, int b, int a, bool iscol) {
     m_points.push_back(Point());
     if (m_npoints == 0) {
         // center of object
@@ -94,12 +96,13 @@ void Object::newPoint(float x, float y, int r, int g, int b, bool iscol) {
         m_points[0].y = y;
     } else {
         // move all object m_points back into the world coordinate system
-        m_points[m_npoints].x = m_hsize * x;
-        m_points[m_npoints].y = m_vsize * y;
+        m_points[m_npoints].x = m_hsize * m_mirrorX * x * std::cos(m_phi) - m_hsize * m_mirrorY * y * std::sin(m_phi);
+        m_points[m_npoints].y = m_hsize * m_mirrorX * x * std::sin(m_phi) + m_hsize * m_mirrorY * y * std::cos(m_phi);
     }
     m_points[m_npoints].r = r;
     m_points[m_npoints].g = g;
     m_points[m_npoints].b = b;
+    m_points[m_npoints].a = a;
     m_points[m_npoints].iscollidable = iscol;
     m_npoints++;
 }
@@ -139,7 +142,10 @@ void Object::modifyPoint(float x, float y, int n) {
     if (n >= 0 && n < m_npoints) {
         m_points[n].x = m_hsize * x;
         m_points[n].y = m_vsize * y;
+        return;
     }
+    std::cout << "an error occured in Object.cpp: n = " << n << " is not a valid index" << std::endl;
+    return;
 }
 
 void Object::updatePosition(float dt) {

@@ -2,17 +2,17 @@
 #include <SDL2_gfxPrimitives.h>
 #include <iostream>
 
-void Renderer::drawObject(Object *object, SDL_Renderer *ren) {
-    Point point = object->getPoint(1);
+void Renderer::drawObject(const Object& object, SDL_Renderer *ren) {
+    Point point = object.getPoint(1);
     int xp_old = (int)(point.x);
     int yp_old = (int)(point.y);
-    for (int i = 1; i < object->npoints(); ++i) {
-        point = object->getPoint(i);
+    for (int i = 2; i < object.npoints(); ++i) {
+        point = object.getPoint(i);
         //filledEllipseRGBA(ren, xp, yp, 0, 0, 0, 0, 0, 255);
         /*if (point.r == 255 && point.g == 255 && point.b == 255)
             lineRGBA(ren, (int)point.x, (int)point.y, xp_old, yp_old, 0, 0, 0, 255);
         else*/
-        lineRGBA(ren, (int)point.x, (int)point.y, xp_old, yp_old, point.r, point.g, point.b, 255);
+        lineRGBA(ren, (int)point.x, (int)point.y, xp_old, yp_old, point.r, point.g, point.b, point.a);
         xp_old = (int)point.x;
         yp_old = (int)point.y;
     }
@@ -35,15 +35,15 @@ void Renderer::addPoint(LumaxRenderer& ren, float x, float y, int r, int g, int 
         ren.points.push_back({xl, yl, r, g, b});
 }
 
-void Renderer::drawObject(Object *object, LumaxRenderer& ren) {
-    if (object->xcenter() >= 0 && object->xcenter() <= SCREEN_WIDTH &&
-        object->ycenter() >= 0 && object->ycenter() <= SCREEN_HEIGHT) {
-        Point point = object->getPoint(1);
+void Renderer::drawObject(const Object& object, LumaxRenderer& ren) {
+    if (object.xcenter() >= 0 && object.xcenter() <= SCREEN_WIDTH &&
+        object.ycenter() >= 0 && object.ycenter() <= SCREEN_HEIGHT) {
+        Point point = object.getPoint(1);
         float xp_old = point.x;
         float yp_old = point.y;
         addPoint(ren, xp_old, yp_old, 0, 0, 0, ren.scalingX, ren.scalingY); // start with a dark point
-        for (int i = 1; i < object->npoints(); ++i) {
-            point = object->getPoint(i);
+        for (int i = 1; i < object.npoints(); ++i) {
+            point = object.getPoint(i);
             addPoint(ren, point.x, point.y, point.r * 256, point.g * 256, point.b * 256, ren.scalingX, ren.scalingY);
             xp_old = point.x;
             yp_old = point.y;

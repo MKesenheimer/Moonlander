@@ -4,7 +4,6 @@
  *  Copyright 2012. All rights reserved.
  */
 #pragma once
-#include <vector>
 #include "Object.h"
 
 class Part : public Object {

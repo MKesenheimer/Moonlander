@@ -14,14 +14,16 @@
 #include "Lander.h"
 #include "Part.h"
 #include "Moon.h"
+#include "FuelBar.h"
+#include "Character.h"
+#include "CharString.h"
 #include "Collision.h"
 #include "Renderer.h"
 
-// TODO: add fuel consumption and status
 // TODO: add score: fuel left / time used
-// TODO: add display constraints to laser output (the fragments get displayed regardless of what the laser can display)
 // TODO: add start and end splash screen
 // TODO: add more levels
+// TODO: stop thrust, when destroyed
 
 const int FRAMES_PER_SECOND = 20; // Fps auf 20 festlegen
 
@@ -29,11 +31,14 @@ int main(int argc, char* args[]) {
     int frame = 0; // take records of frame number
     bool cap = true; // Framecap an oder ausschalten
 
-    // Timer zum festlegen der FPS
+    // Timer zum Festlegen der FPS
     sdl::auxiliary::Timer fps;
-    // Timer zum errechnen der weltweit vergangenen Zeit
+    // Timer zum Errechnen der weltweit vergangenen Zeit
     sdl::auxiliary::Timer worldtime;
     worldtime.start();
+    // Timer zum Errechnen des High-Scores
+    sdl::auxiliary::Timer scoreTime;
+    scoreTime.start();
 
     // calculate the small time between two frames in ms
     int oldTime = 0;
@@ -93,9 +98,13 @@ int main(int argc, char* args[]) {
 #endif
 
     // generate new objects
-    Lander lander(20, 20, 2, 2, -M_PI / 2, 0);
+    Lander lander(20, 20, 2, 2, 0, 0);
+    // must be done this way, to keep the "world" angle (global lander angle)
+    // and the local angle of the lander synchronized:
+    lander.setAngle(-M_PI / 2);
     lander.setv(1.0, 0.0);
-    Moon moon(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
+    lander.setBurnRate(0.2);
+    const Moon moon(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
     std::vector<Part> parts;
     const int nparts = 35;
     for (int i = 0; i < nparts; ++i) {
@@ -103,28 +112,29 @@ int main(int argc, char* args[]) {
             sdl::auxiliary::Utilities::frand(0, 2 * M_PI), sdl::auxiliary::Utilities::frand(-0.5, 0.5)));
         parts[i].setv(0.0, 0.0);
     }
+    const CharString fuelStr(400, 20, 20, 20, 0, std::string("fuel"), 0, 255, 255);
+    FuelBar fuelBar(500, 30, 300, 1);
 
     // game mechanics
     bool quit = false;
-    bool firstcontact = true;
+    bool reset = false;
+    bool firstContact = true;
     float x1 = 0, y1 = 0; // position of first contact
-    float x0, y0; // moon position
-    float x, y; // lander position
-    float vx, vy; // lander velocity
-    float r; // distance moon lander
     bool destroyed = false; // if the lander is destroyed
     bool collided = false;
     bool initparts = true;
+    bool landed = false;
+    bool blink = true;
 
     // constants for integration
     // newtons constant of gravity
-    float gamma = 1e3;
+    const float gamma = 1e3;
     // energy dissipation during flight (for example air drag)
-    float alpha = 0.0; //1e-4
+    const float alpha = 0.0; //1e-4
     // energy dissipation during landing
-    float beta = 0.0; //1e-3
+    const float beta = 0.0; //1e-3
     // strength of stilt springs
-    float omega = 1e-3;
+    const float omega = 1e-3;
 
     // our event structure
     SDL_Event e;
@@ -141,16 +151,42 @@ int main(int argc, char* args[]) {
             else if (e.type == SDL_KEYDOWN)
                 if (e.key.keysym.sym == SDLK_c)
                     cap = !cap;
+                if (e.key.keysym.sym == SDLK_SPACE)
+                    reset = true;
+        }
+
+        // reset
+        if (reset) {
+            scoreTime.start();
+            lander.setPos(20, 20);
+            lander.setAngle(-M_PI / 2);
+            lander.setv(1.0, 0.0);
+            lander.setFuel(lander.getMaxFuel());
+            fuelBar.modifyPoint(((float)lander.getFuel() / (float)lander.getMaxFuel()), 0, 2);
+
+            // game mechanics
+            quit = false;
+            firstContact = true;
+            x1 = 0, y1 = 0;
+            destroyed = false;
+            collided = false;
+            initparts = true;
+            landed = false;
+            reset = false;
+            blink = true;
         }
 
         // handle keyboard inputs (no lags and delays!)
         const uint8_t* keystate = SDL_GetKeyboardState(NULL);
         if (keystate[SDL_SCANCODE_UP]) {
-            float vxf = lander.vx() + 0.03 * std::sin(lander.phi());
-            float vyf = lander.vy() - 0.03 * std::cos(lander.phi());
-            lander.setv(vxf,vyf);
-            if (lander.thrust() < 10)
-                lander.setThrust(lander.thrust() + 3);
+            if (!destroyed && lander.getFuel() > 0 && !landed) {
+                fuelBar.modifyPoint(((float)lander.getFuel() / (float)lander.getMaxFuel()), 0, 2);
+                float vxf = lander.vx() + 0.03 * std::sin(lander.phi());
+                float vyf = lander.vy() - 0.03 * std::cos(lander.phi());
+                lander.setv(vxf, vyf);
+                if (lander.getThrust() < 10)
+                    lander.setThrust(lander.getThrust() + 3);
+            }
         }
         if (!collided && keystate[SDL_SCANCODE_LEFT]) {
             // lander.setSpin(lander.spin() - 0.01);
@@ -164,16 +200,20 @@ int main(int argc, char* args[]) {
         }
 
         // if no key pressed, reduce thrust
-        if (lander.thrust() > 0)
-            lander.setThrust(lander.thrust() - 1);
+        if (lander.getThrust() > 0)
+            lander.setThrust(lander.getThrust() - 1);
 
-        x0 = SCREEN_WIDTH / 2; // moon.x();
-        y0 = 3 * SCREEN_HEIGHT; // moon.y();
-        x = lander.x();
-        y = lander.y();
-        vx = lander.vx();
-        vy = lander.vy();
-        r = std::sqrt(std::pow(x - x0, 2) + std::pow(y - y0, 2));
+        // moon position
+        const float x0 = SCREEN_WIDTH / 2; // moon.x();
+        const float y0 = 3 * SCREEN_HEIGHT; // moon.y();
+        // lander position
+        const float x = lander.x();
+        const float y = lander.y();
+        // lander velocity
+        float vx = lander.vx();
+        float vy = lander.vy();
+        // distance moon lander
+        const float r = std::sqrt(std::pow(x - x0, 2) + std::pow(y - y0, 2));
         float dvx,  dvy;
         if (r <= 2000) { // atmosphere below 2000
             dvx = -gamma * (x - x0) / std::pow(r, 3) * dt - std::abs(alpha * vx * dt);
@@ -187,10 +227,10 @@ int main(int argc, char* args[]) {
         collided = Collision::checkCollision(lander, moon);
         if (collided) {
             // remember point of first contact
-            if (firstcontact) {
+            if (firstContact) {
                 x1 = x;
                 y1 = y;
-                firstcontact = false;
+                firstContact = false;
 
                 // destroy the lander if velocity is to big
                 if (std::sqrt(std::pow(vx, 2) + std::pow(vy, 2)) >= 1.0)
@@ -201,12 +241,12 @@ int main(int argc, char* args[]) {
             dvy = dvy - omega * (y - y1) * dt - std::abs(beta * vy * dt);
 
             // stop the lander if successfully landed
-            if (std::sqrt(std::pow(vx, 2) + std::pow(vy, 2)) <= 0.1 && lander.thrust() == 0) {
+            if (std::sqrt(std::pow(vx, 2) + std::pow(vy, 2)) <= 0.1 && lander.getThrust() == 0) {
+                landed = true;
                 vx = 0.0;
                 vy = 0.0;
                 dvx = 0.0;
                 dvy = 0.0;
-
                 // if the lander isn't upright, tilt it
                 if (lander.phi() > 0.4)
                     lander.setSpin(lander.spin() + 0.001); // fall over
@@ -226,7 +266,7 @@ int main(int argc, char* args[]) {
 
         } else {
             // reset variable which is used to remember the first contact
-            firstcontact = true;
+            firstContact = true;
             lander.setSpin(0);
         }
 
@@ -236,20 +276,24 @@ int main(int argc, char* args[]) {
         boxRGBA(renderer, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0, 255);
 
         // draw the surface of the moon
-        Renderer::drawObject(&moon, renderer);
+        Renderer::drawObject(moon, renderer);
 #ifdef LUMAX_OUTPUT
-        Renderer::drawObject(&moon, lumaxRenderer);
+        Renderer::drawObject(moon, lumaxRenderer);
 #endif
 
+        // if landed successfully
         if (!destroyed) {
             // integration
             lander.setv(vx + dvx, vy + dvy);
             lander.updatePosition(dt / 50);
-            Renderer::drawObject(&lander, renderer);
+            Renderer::drawObject(lander, renderer);
 #ifdef LUMAX_OUTPUT
-            Renderer::drawObject(&lander, lumaxRenderer);
+            Renderer::drawObject(lander, lumaxRenderer);
 #endif
+
+        // if destroyed
         } else {
+            scoreTime.pause();
             if (initparts) {
                     for (int i = 0; i < nparts; ++i) {
                         parts[i].setPos(x, y);
@@ -261,11 +305,50 @@ int main(int argc, char* args[]) {
             }
             for (int i = 0; i < nparts; ++i) {
                 parts[i].updatePosition(dt / 50);
-                Renderer::drawObject(&parts[i], renderer);
+                Renderer::drawObject(parts[i], renderer);
 #ifdef LUMAX_OUTPUT
-                Renderer::drawObject(&parts[i], lumaxRenderer);
+                Renderer::drawObject(parts[i], lumaxRenderer);
 #endif
             }
+
+            if (blink) {
+                CharString gameOverStr(300, 200, 50, 50, 0, std::string("Game Over"), 255, 120, 0);
+                Renderer::drawObject(gameOverStr, renderer);
+#ifdef LUMAX_OUTPUT
+                Renderer::drawObject(gameOverStr, lumaxRenderer);
+#endif
+            }
+        }
+
+        if (!landed && !destroyed) {
+            // draw the fuel bar
+            Renderer::drawObject(fuelStr, renderer);
+#ifdef LUMAX_OUTPUT
+            Renderer::drawObject(fuelStr, lumaxRenderer);
+#endif
+            Renderer::drawObject(fuelBar, renderer);
+#ifdef LUMAX_OUTPUT
+            Renderer::drawObject(fuelBar, lumaxRenderer);
+#endif
+
+            // draw the passed time
+            std::string scoreStr = std::string("time ") + std::to_string((int)(scoreTime.getTicks() / 1000.f));
+            CharString passedTime(20, 20, 20, 20, 0, scoreStr, 255, 120, 0);
+            Renderer::drawObject(passedTime, renderer);
+#ifdef LUMAX_OUTPUT
+            Renderer::drawObject(passedTime, lumaxRenderer);
+#endif
+        }
+
+        // if landed, display the score
+        if (landed && blink) {
+            scoreTime.pause();
+            std::string scoreStr = std::string("score ") + std::to_string((int)(10000.0f * lander.getFuel() / scoreTime.getTicks()));
+            CharString score(300, 200, 50, 50, 0, scoreStr, 255, 120, 0);
+            Renderer::drawObject(score, renderer);
+#ifdef LUMAX_OUTPUT
+            Renderer::drawObject(score, lumaxRenderer);
+#endif
         }
 
         // draw the dimensions of the objects
@@ -281,6 +364,8 @@ int main(int argc, char* args[]) {
         // Timer related stuff
         oldTime = newTime;
         newTime = worldtime.getTicks();
+
+//#define VARIABLEDT
 #ifdef VARIABLEDT
         if (newTime > oldTime)
             dt = newTime - oldTime; // small time between two frames in ms
@@ -302,6 +387,7 @@ int main(int argc, char* args[]) {
             SDL_SetWindowTitle(window,caption.str().c_str());
             worldtime.start();
             frame = 0;
+            blink = !blink;
         }
     }
 

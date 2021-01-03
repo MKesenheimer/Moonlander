@@ -33,11 +33,11 @@ struct LumaxRenderer {
 class Renderer {
 public:
     // Draw an Object to a SDL_Renderer
-    static void drawObject(Object *object, SDL_Renderer *ren);
+    static void drawObject(const Object& object, SDL_Renderer *ren);
 
 #ifdef LUMAX_OUTPUT
     // Draw an Object to the Lumax Renderer
-    static void drawObject(Object *object, LumaxRenderer& ren);
+    static void drawObject(const Object& object, LumaxRenderer& ren);
 
     // send the points in the buffer to the Lumax device
     static int sendPointsToLumax(void *lumaxHandle, LumaxRenderer& ren, int scanSpeed);

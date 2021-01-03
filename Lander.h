@@ -9,11 +9,23 @@
 
 class Lander : public Object {
 public:
-    Lander(float x, float y, float hsize, float vsize, float angle, float spin);
+    Lander(float x, float y, float hsize, float vsize, float angle, float spin, int maxFuel = 2000);
 
     void setThrust(float thr);
-    float thrust() const;
+
+    float getThrust() const;
+
+    void setFuel(int fuel);
+
+    int getFuel() const;
+
+    int getMaxFuel() const;
+
+    void setBurnRate(float burnRate);
 
 private:
     float m_thrust;
+    int m_fuel;
+    int m_maxFuel;
+    float m_burnRate;
 };
