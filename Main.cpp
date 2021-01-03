@@ -20,10 +20,8 @@
 #include "Collision.h"
 #include "Renderer.h"
 
-// TODO: add score: fuel left / time used
-// TODO: add start and end splash screen
+
 // TODO: add more levels
-// TODO: stop thrust, when destroyed
 
 const int FRAMES_PER_SECOND = 20; // Fps auf 20 festlegen
 
