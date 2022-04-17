@@ -8,5 +8,5 @@
 
 class Part : public Object {
   public:
-    Part(float x, float y, float hsize, float vsize, float angle, float spin);
+    Part(float x, float y, float vx, float vy, float hsize, float vsize, float angle, float spin);
 };

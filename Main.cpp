@@ -96,20 +96,19 @@ int main(int argc, char* args[]) {
 #endif
 
     // generate new objects
-    Lander lander(20, 20, 2, 2, 0, 0);
+    Lander lander(20, 20, 1.0, 0.0, 2, 2, 0, 0);
     // must be done this way, to keep the "world" angle (global lander angle)
     // and the local angle of the lander synchronized:
     lander.setAngle(-M_PI / 2);
-    lander.setv(1.0, 0.0);
     lander.setBurnRate(0.2);
     const Moon moon(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
     std::vector<Part> parts;
     const int nparts = 35;
     for (int i = 0; i < nparts; ++i) {
-        parts.push_back(Part(0, 0, sdl::auxiliary::Utilities::frand(5, 15), sdl::auxiliary::Utilities::frand(5, 15), 
+        parts.push_back(Part(0, 0, 0, 0, sdl::auxiliary::Utilities::frand(5, 15), sdl::auxiliary::Utilities::frand(5, 15), 
             sdl::auxiliary::Utilities::frand(0, 2 * M_PI), sdl::auxiliary::Utilities::frand(-0.5, 0.5)));
-        parts[i].setv(0.0, 0.0);
     }
+    
     const CharString fuelStr(400, 20, 20, 20, 0, std::string("fuel"), 0, 255, 255);
     FuelBar fuelBar(500, 30, 300, 1);
 

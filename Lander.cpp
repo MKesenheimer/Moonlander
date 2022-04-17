@@ -2,8 +2,8 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-Lander::Lander(float x, float y, float hsize, float vsize, float angle, float spin, int maxFuel) 
-    : Object(x, y, hsize, vsize, angle, spin), m_thrust(0.0), m_fuel(maxFuel), m_maxFuel(maxFuel), m_burnRate(1) {
+Lander::Lander(float x, float y, float vx, float vy, float hsize, float vsize, float angle, float spin, int maxFuel) 
+    : Object(x, y, vx, vy, hsize, vsize, angle, spin), m_thrust(0.0), m_fuel(maxFuel), m_maxFuel(maxFuel), m_burnRate(1) {
     //save all relevant points to draw the lander (the points are defined
     //in the object-own coordinate system)
     //thruster

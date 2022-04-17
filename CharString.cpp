@@ -2,7 +2,7 @@
 #include <iostream>
 
 CharString::CharString(float x, float y, float hsize, float vsize, float angle, const std::string& str, int r, int g, int b)
-    : Object(x, y, hsize, vsize, angle, 0) {
+    : Object(x, y, 0, 0, hsize, vsize, angle, 0) {
     float dist = 0;
     for (const auto& c : str) {
         if (c != ' ') {

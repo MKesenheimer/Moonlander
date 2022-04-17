@@ -8,7 +8,7 @@
 
 class Lander : public Object {
 public:
-    Lander(float x, float y, float hsize, float vsize, float angle, float spin, int maxFuel = 2000);
+    Lander(float x, float y, float vx, float vy, float hsize, float vsize, float angle, float spin, int maxFuel = 2000);
 
     void setThrust(float thr);
 
