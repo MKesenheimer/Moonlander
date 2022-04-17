@@ -7,7 +7,7 @@ COMPILER = g++
 ########################################################################
 ## Flags
 FLAGS   = -g -std=c++17
-LDFLAGS =
+LDFLAGS = 
 PREPRO  =
 ##verbose level 1
 #DEBUG   = -D DEBUGV1
@@ -54,7 +54,7 @@ LDFLAGS += $(shell sdl2-config --static-libs) -lSDL2_gfx -lSDL2_image
 	$(CXX) -c -o build/$@ $<
 
 # Libraries
-LIB = -L. -llumax
+LIB = -L./GameLibrary -llumax
 
 # Frameworks
 # -framework SDL_gfx 
@@ -80,7 +80,7 @@ clean:
 	rm -f build/*.a Moonlander
 
 do:
-	make && ./Moonlander
+	make && cp GameLibrary/liblumax.so . && ./Moonlander
 
 ########################################################################
 #                       -*- End of Makefile -*-                        #
