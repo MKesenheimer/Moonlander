@@ -4,7 +4,7 @@
  *  Copyright 2021. All rights reserved.
  */
 #pragma once
-#include "Object.h"
+#include "GameLibrary/Object.h"
 #include "Character.h"
 #include <string.h>
 

@@ -4,8 +4,7 @@
  *  Copyright 2012. All rights reserved.
  */
 #pragma once
-#include <vector>
-#include "Object.h"
+#include "GameLibrary/Object.h"
 
 class Moon : public Object {
 public:

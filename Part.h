@@ -4,7 +4,7 @@
  *  Copyright 2012. All rights reserved.
  */
 #pragma once
-#include "Object.h"
+#include "GameLibrary/Object.h"
 
 class Part : public Object {
   public:
