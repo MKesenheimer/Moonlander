@@ -11,14 +11,14 @@
 
 #include "SDLTools/Utilities.h"
 #include "SDLTools/Timer.h"
+#include "GameLibrary/Collision.h"
+#include "GameLibrary/Renderer.h"
 #include "Lander.h"
 #include "Part.h"
 #include "Moon.h"
 #include "FuelBar.h"
 #include "Character.h"
 #include "CharString.h"
-#include "GameLibrary/Collision.h"
-#include "Renderer.h"
 
 
 // TODO: add more levels
