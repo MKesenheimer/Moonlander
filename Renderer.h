@@ -5,8 +5,8 @@
  */
 #pragma once
 #include <SDL.h>
-#include "Object.h"
-#include "Point.h"
+#include "GameLibrary/Object.h"
+#include "GameLibrary/Point.h"
 
 #define LUMAX_OUTPUT
 #ifdef LUMAX_OUTPUT

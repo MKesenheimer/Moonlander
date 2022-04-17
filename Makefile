@@ -30,7 +30,7 @@ PARENTDIR  = $(WORKINGDIR)/..
 ########################################################################
 ## search for the files and set paths
 
-vpath %.cpp $(WORKINGDIR)
+vpath %.cpp $(WORKINGDIR) $(WORKINGDIR)/GameLibrary
 vpath %.m $(WORKINGDIR)
 vpath %.a $(WORKINGDIR)/build
 vpath %.o $(WORKINGDIR)/build

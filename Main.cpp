@@ -17,7 +17,7 @@
 #include "FuelBar.h"
 #include "Character.h"
 #include "CharString.h"
-#include "Collision.h"
+#include "GameLibrary/Collision.h"
 #include "Renderer.h"
 
 

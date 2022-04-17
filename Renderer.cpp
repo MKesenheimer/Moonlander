@@ -32,7 +32,7 @@ void Renderer::addPoint(LumaxRenderer& ren, float x, float y, int r, int g, int 
     float yl = transform(y, SCREEN_HEIGHT, 0, mid - yScaling * ren.mirrorFactY * ren.maxPositions / 2, mid + yScaling * ren.mirrorFactY * ren.maxPositions / 2);
     //if (xl >= mid - xScaling * ren.maxPositions / 2 && xl <= mid + xScaling * ren.maxPositions / 2 &&
     //    yl >= mid - yScaling * ren.maxPositions / 2 && yl <= mid + yScaling * ren.maxPositions / 2)
-        ren.points.push_back({xl, yl, r, g, b});
+    ren.points.push_back({xl, yl, r, g, b});
 }
 
 void Renderer::drawObject(const Object& object, LumaxRenderer& ren) {
