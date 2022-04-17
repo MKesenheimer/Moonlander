@@ -16,7 +16,7 @@ Lander::Lander(float x, float y, float vx, float vy, float hsize, float vsize, f
     //fire
     newPoint( 3, 5);
     newPoint( 2, 5);
-    newPoint( 0, 5, 255, 0, 0, 255, false); //8th point is not collidable (tip of flare)
+    newPoint( 0, 5, 255, 0, 0, 255, false); // 7th point is not collidable (tip of flare)
     newPoint(-2, 5, 255, 0, 0);
     newPoint( 3, 5);
     newPoint( 1, 0);
@@ -68,7 +68,7 @@ void Lander::setThrust(float thr) {
     m_thrust = thr;
     m_fuel -= m_burnRate * thr;
     if (m_fuel < 0) m_fuel = 0;
-    this->modifyPoint(-sin(phi()) * (5 + thr * 2), cos(phi()) * (5 + thr * 2), 8);
+    this->modifyPoint(-sin(phi()) * (5 + thr * 2), cos(phi()) * (5 + thr * 2), 7);
 }
 
 float Lander::getThrust() const {

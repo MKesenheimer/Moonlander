@@ -108,7 +108,7 @@ int main(int argc, char* args[]) {
         parts.push_back(Part(0, 0, 0, 0, sdl::auxiliary::Utilities::frand(5, 15), sdl::auxiliary::Utilities::frand(5, 15), 
             sdl::auxiliary::Utilities::frand(0, 2 * M_PI), sdl::auxiliary::Utilities::frand(-0.5, 0.5)));
     }
-    
+
     const CharString fuelStr(400, 20, 20, 20, 0, std::string("fuel"), 0, 255, 255);
     FuelBar fuelBar(500, 30, 300, 1);
 
@@ -159,7 +159,7 @@ int main(int argc, char* args[]) {
             lander.setAngle(-M_PI / 2);
             lander.setv(1.0, 0.0);
             lander.setFuel(lander.getMaxFuel());
-            fuelBar.modifyPoint(((float)lander.getFuel() / (float)lander.getMaxFuel()), 0, 2);
+            fuelBar.modifyPoint(((float)lander.getFuel() / (float)lander.getMaxFuel()), 0, 1);
 
             // game mechanics
             quit = false;
@@ -177,7 +177,7 @@ int main(int argc, char* args[]) {
         const uint8_t* keystate = SDL_GetKeyboardState(NULL);
         if (keystate[SDL_SCANCODE_UP]) {
             if (!destroyed && lander.getFuel() > 0 && !landed) {
-                fuelBar.modifyPoint(((float)lander.getFuel() / (float)lander.getMaxFuel()), 0, 2);
+                fuelBar.modifyPoint(((float)lander.getFuel() / (float)lander.getMaxFuel()), 0, 1);
                 float vxf = lander.vx() + 0.03 * std::sin(lander.phi());
                 float vyf = lander.vy() - 0.03 * std::cos(lander.phi());
                 lander.setv(vxf, vyf);
@@ -269,7 +269,7 @@ int main(int argc, char* args[]) {
 
         // Rendering
         SDL_RenderClear(renderer);
-        // Draw the background white
+        // Draw the background black
         boxRGBA(renderer, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0, 255);
 
         // draw the surface of the moon

@@ -410,7 +410,7 @@ Character::Character(float x, float y, float hsize, float vsize, char c, int r, 
         break;
     }
 
-    // fo through all numbers of the matrix and add the respective position
+    // go through all numbers of the matrix and add the respective position
     // as a new point in a map. The map is ordered.
     std::map<int, std::pair<float, float>> points;
     for (int i = 0; i < ysteps; ++i)
@@ -420,5 +420,5 @@ Character::Character(float x, float y, float hsize, float vsize, char c, int r, 
                     points.emplace(mat[selector][i][j][k], std::pair<float, float>(j * xdelta, i * ydelta));
 
     for (int i = 1; i <= points.size(); ++i)
-            newPoint(points[i].first, points[i].second, r, g, b);
+        newPoint(points[i].first, points[i].second, r, g, b);
 }
