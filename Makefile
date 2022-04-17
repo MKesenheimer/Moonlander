@@ -6,7 +6,7 @@ COMPILER = g++
 
 ########################################################################
 ## Flags
-FLAGS   = -g -std=c++17
+FLAGS   = -g -std=c++17 -D LUMAX_OUTPUT
 LDFLAGS = 
 PREPRO  =
 ##verbose level 1
