@@ -55,7 +55,7 @@ int main(int argc, char* args[]) {
     // Set up our window and renderer, this time let's put our window in the center
     // of the screen
     SDL_Window *window = SDL_CreateWindow("Moonlander", SDL_WINDOWPOS_CENTERED,
-            SDL_WINDOWPOS_CENTERED, g_screen_width, g_screen_height, SDL_WINDOW_SHOWN);
+            SDL_WINDOWPOS_CENTERED, Renderer::screen_width, Renderer::screen_height, SDL_WINDOW_SHOWN);
     if (window == NULL){
         sdl::auxiliary::Utilities::logSDLError(std::cout, "CreateWindow");
         SDL_Quit();
@@ -101,7 +101,7 @@ int main(int argc, char* args[]) {
     // and the local angle of the lander synchronized:
     lander.setAngle(-M_PI / 2);
     lander.setBurnRate(0.2);
-    const Moon moon(g_screen_width / 2, g_screen_height, g_screen_width, g_screen_height, 0);
+    const Moon moon(Renderer::screen_width / 2, Renderer::screen_height, Renderer::screen_width, Renderer::screen_height, 0);
     std::vector<Part> parts;
     const int nparts = 35;
     for (int i = 0; i < nparts; ++i) {
@@ -201,8 +201,8 @@ int main(int argc, char* args[]) {
             lander.setThrust(lander.getThrust() - 1);
 
         // moon position
-        const float x0 = g_screen_width / 2; // moon.x();
-        const float y0 = 3 * g_screen_height; // moon.y();
+        const float x0 = Renderer::screen_width / 2; // moon.x();
+        const float y0 = 3 * Renderer::screen_height; // moon.y();
         // lander position
         const float x = lander.x();
         const float y = lander.y();
@@ -270,7 +270,7 @@ int main(int argc, char* args[]) {
         // Rendering
         SDL_RenderClear(renderer);
         // Draw the background black
-        boxRGBA(renderer, 0, 0, g_screen_width, g_screen_height, 0, 0, 0, 255);
+        boxRGBA(renderer, 0, 0, Renderer::screen_width, Renderer::screen_height, 0, 0, 0, 255);
 
         // draw the surface of the moon
         Renderer::drawObject(moon, renderer);
