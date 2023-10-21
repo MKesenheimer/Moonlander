@@ -6,7 +6,7 @@
 #pragma once
 #include "GameLibrary/Object.h"
 #include "Character.h"
-#include <string.h>
+#include <string>
 
 class CharString : public Object {
   public:
