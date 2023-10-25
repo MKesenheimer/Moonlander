@@ -4,9 +4,9 @@
  *  Copyright 2012. All rights reserved.
  */
 #pragma once
-#include "GameLibrary/Object.h"
+#include "GameLibrary/object.h"
 
-class Part : public Object {
+class Part : public object {
   public:
     Part(float x, float y, float vx, float vy, float hsize, float vsize, float angle, float spin);
 };

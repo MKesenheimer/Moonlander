@@ -9,16 +9,16 @@
 #include <SDL.h>
 #include <SDL_image.h>
 
-#include "SDLTools/Utilities.h"
-#include "SDLTools/Timer.h"
-#include "GameLibrary/Collision.h"
-#include "GameLibrary/Renderer.h"
-#include "Lander.h"
-#include "Part.h"
-#include "Moon.h"
-#include "FuelBar.h"
-#include "Character.h"
-#include "CharString.h"
+#include "SDLTools/utilities.h"
+#include "SDLTools/timer.h"
+#include "GameLibrary/collision.h"
+#include "GameLibrary/renderer.h"
+#include "lander.h"
+#include "part.h"
+#include "moon.h"
+#include "fuelbar.h"
+#include "character.h"
+#include "charstring.h"
 
 
 // TODO: add more levels
@@ -30,12 +30,12 @@ int main(int argc, char* args[]) {
     bool cap = true; // Framecap an oder ausschalten
 
     // Timer zum Festlegen der FPS
-    sdl::auxiliary::Timer fps;
+    sdl::auxiliary::timer fps;
     // Timer zum Errechnen der weltweit vergangenen Zeit
-    sdl::auxiliary::Timer worldtime;
+    sdl::auxiliary::timer worldtime;
     worldtime.start();
     // Timer zum Errechnen des High-Scores
-    sdl::auxiliary::Timer scoreTime;
+    sdl::auxiliary::timer scoreTime;
     scoreTime.start();
 
     // calculate the small time between two frames in ms
@@ -44,28 +44,28 @@ int main(int argc, char* args[]) {
     int dt = 50;
 
     // initialize random generator
-    sdl::auxiliary::Utilities::seed(time(NULL));
+    sdl::auxiliary::utilities::seed(time(NULL));
 
     //Start up SDL and make sure it went ok
     if (SDL_Init(SDL_INIT_VIDEO) != 0){
-        sdl::auxiliary::Utilities::logSDLError(std::cout, "SDL_Init");
+        sdl::auxiliary::utilities::logSDLError(std::cout, "SDL_Init");
         return -1;
     }
 
     // Set up our window and renderer, this time let's put our window in the center
     // of the screen
     SDL_Window *window = SDL_CreateWindow("Moonlander", SDL_WINDOWPOS_CENTERED,
-            SDL_WINDOWPOS_CENTERED, Renderer::screen_width, Renderer::screen_height, SDL_WINDOW_SHOWN);
+            SDL_WINDOWPOS_CENTERED, renderer::screen_width, renderer::screen_height, SDL_WINDOW_SHOWN);
     if (window == NULL){
-        sdl::auxiliary::Utilities::logSDLError(std::cout, "CreateWindow");
+        sdl::auxiliary::utilities::logSDLError(std::cout, "CreateWindow");
         SDL_Quit();
         return -1;
     }
 
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (renderer == NULL){
-        sdl::auxiliary::Utilities::logSDLError(std::cout, "CreateRenderer");
-        sdl::auxiliary::Utilities::cleanup(window);
+        sdl::auxiliary::utilities::logSDLError(std::cout, "CreateRenderer");
+        sdl::auxiliary::utilities::cleanup(window);
         SDL_Quit();
         return -1;
     }
@@ -80,19 +80,19 @@ int main(int argc, char* args[]) {
         lumaxHandle = Lumax_OpenDevice(1, 0);
         printf("Lumax_OpenDevice returned handle: 0x%lx\n", (unsigned long)lumaxHandle);
         if (lumaxHandle == NULL){
-            sdl::auxiliary::Utilities::logSDLError(std::cout, "Lumax_OpenDevice");
-            sdl::auxiliary::Utilities::cleanup(window, renderer);
+            sdl::auxiliary::utilities::logSDLError(std::cout, "Lumax_OpenDevice");
+            sdl::auxiliary::utilities::cleanup(window, renderer);
             SDL_Quit();
             return 1;
         }
     }
 
-    LumaxRenderer lumaxRenderer;
-    lumaxRenderer.mirrorFactX = -1;
-    lumaxRenderer.mirrorFactY = 1;
+    renderer::lumaxRenderer lumaxRenderer;
+    lumaxRenderer.parameters.mirrorFactX = -1;
+    lumaxRenderer.parameters.mirrorFactY = 1;
     // scaling of the laser output in respect to the SDL screen
-    lumaxRenderer.scalingX = 0.3;
-    lumaxRenderer.scalingY = 0.3;
+    lumaxRenderer.parameters.scalingX = 0.3;
+    lumaxRenderer.parameters.scalingY = 0.3;
 #endif
 
     // generate new objects
@@ -101,12 +101,12 @@ int main(int argc, char* args[]) {
     // and the local angle of the lander synchronized:
     lander.setAngle(-M_PI / 2);
     lander.setBurnRate(0.2);
-    const Moon moon(Renderer::screen_width / 2, Renderer::screen_height, Renderer::screen_width, Renderer::screen_height, 0);
+    const Moon moon(renderer::screen_width / 2, renderer::screen_height, renderer::screen_width, renderer::screen_height, 0);
     std::vector<Part> parts;
     const int nparts = 35;
     for (int i = 0; i < nparts; ++i) {
-        parts.push_back(Part(0, 0, 0, 0, sdl::auxiliary::Utilities::frand(5, 15), sdl::auxiliary::Utilities::frand(5, 15), 
-            sdl::auxiliary::Utilities::frand(0, 2 * M_PI), sdl::auxiliary::Utilities::frand(-0.5, 0.5)));
+        parts.push_back(Part(0, 0, 0, 0, sdl::auxiliary::utilities::frand(5, 15), sdl::auxiliary::utilities::frand(5, 15), 
+            sdl::auxiliary::utilities::frand(0, 2 * M_PI), sdl::auxiliary::utilities::frand(-0.5, 0.5)));
     }
 
     const CharString fuelStr(400, 20, 20, 20, 0, std::string("fuel"), 0, 255, 255);
@@ -201,8 +201,8 @@ int main(int argc, char* args[]) {
             lander.setThrust(lander.getThrust() - 1);
 
         // moon position
-        const float x0 = Renderer::screen_width / 2; // moon.x();
-        const float y0 = 3 * Renderer::screen_height; // moon.y();
+        const float x0 = renderer::screen_width / 2; // moon.x();
+        const float y0 = 3 * renderer::screen_height; // moon.y();
         // lander position
         const float x = lander.x();
         const float y = lander.y();
@@ -221,7 +221,7 @@ int main(int argc, char* args[]) {
         }
 
         // collision detection
-        collided = Collision::checkCollision(lander, moon);
+        collided = collision::checkCollision(lander, moon);
         if (collided) {
             // remember point of first contact
             if (firstContact) {
@@ -270,12 +270,12 @@ int main(int argc, char* args[]) {
         // Rendering
         SDL_RenderClear(renderer);
         // Draw the background black
-        boxRGBA(renderer, 0, 0, Renderer::screen_width, Renderer::screen_height, 0, 0, 0, 255);
+        boxRGBA(renderer, 0, 0, renderer::screen_width, renderer::screen_height, 0, 0, 0, 255);
 
         // draw the surface of the moon
-        Renderer::drawObject(moon, renderer);
+        renderer::drawObject(moon, renderer);
 #ifdef LUMAX_OUTPUT
-        Renderer::drawObject(moon, lumaxRenderer);
+        renderer::drawObject(moon, lumaxRenderer);
 #endif
 
         // if landed successfully
@@ -283,9 +283,9 @@ int main(int argc, char* args[]) {
             // integration
             lander.setv(vx + dvx, vy + dvy);
             lander.updatePosition(dt / 50);
-            Renderer::drawObject(lander, renderer);
+            renderer::drawObject(lander, renderer);
 #ifdef LUMAX_OUTPUT
-            Renderer::drawObject(lander, lumaxRenderer);
+            renderer::drawObject(lander, lumaxRenderer);
 #endif
 
         // if destroyed
@@ -294,46 +294,46 @@ int main(int argc, char* args[]) {
             if (initparts) {
                     for (int i = 0; i < nparts; ++i) {
                         parts[i].setPos(x, y);
-                        vx = sdl::auxiliary::Utilities::frand(-10, 10);
-                        vy = sdl::auxiliary::Utilities::frand(-10, 10);
+                        vx = sdl::auxiliary::utilities::frand(-10, 10);
+                        vy = sdl::auxiliary::utilities::frand(-10, 10);
                         parts[i].setv(vx, vy);
                     }
                 initparts = false;
             }
             for (int i = 0; i < nparts; ++i) {
                 parts[i].updatePosition(dt / 50);
-                Renderer::drawObject(parts[i], renderer);
+                renderer::drawObject(parts[i], renderer);
 #ifdef LUMAX_OUTPUT
-                Renderer::drawObject(parts[i], lumaxRenderer);
+                renderer::drawObject(parts[i], lumaxRenderer);
 #endif
             }
 
             if (blink) {
                 CharString gameOverStr(300, 200, 50, 50, 0, std::string("Game Over"), 255, 120, 0);
-                Renderer::drawObject(gameOverStr, renderer);
+                renderer::drawObject(gameOverStr, renderer);
 #ifdef LUMAX_OUTPUT
-                Renderer::drawObject(gameOverStr, lumaxRenderer);
+                renderer::drawObject(gameOverStr, lumaxRenderer);
 #endif
             }
         }
 
         if (!landed && !destroyed) {
             // draw the fuel bar
-            Renderer::drawObject(fuelStr, renderer);
+            renderer::drawObject(fuelStr, renderer);
 #ifdef LUMAX_OUTPUT
-            Renderer::drawObject(fuelStr, lumaxRenderer);
+            renderer::drawObject(fuelStr, lumaxRenderer);
 #endif
-            Renderer::drawObject(fuelBar, renderer);
+            renderer::drawObject(fuelBar, renderer);
 #ifdef LUMAX_OUTPUT
-            Renderer::drawObject(fuelBar, lumaxRenderer);
+            renderer::drawObject(fuelBar, lumaxRenderer);
 #endif
 
             // draw the passed time
             std::string scoreStr = std::string("time ") + std::to_string((int)(scoreTime.getTicks() / 1000.f));
             CharString passedTime(20, 20, 20, 20, 0, scoreStr, 255, 120, 0);
-            Renderer::drawObject(passedTime, renderer);
+            renderer::drawObject(passedTime, renderer);
 #ifdef LUMAX_OUTPUT
-            Renderer::drawObject(passedTime, lumaxRenderer);
+            renderer::drawObject(passedTime, lumaxRenderer);
 #endif
         }
 
@@ -342,9 +342,9 @@ int main(int argc, char* args[]) {
             scoreTime.pause();
             std::string scoreStr = std::string("score ") + std::to_string((int)(10000.0f * lander.getFuel() / scoreTime.getTicks()));
             CharString score(300, 200, 50, 50, 0, scoreStr, 255, 120, 0);
-            Renderer::drawObject(score, renderer);
+            renderer::drawObject(score, renderer);
 #ifdef LUMAX_OUTPUT
-            Renderer::drawObject(score, lumaxRenderer);
+            renderer::drawObject(score, lumaxRenderer);
 #endif
         }
 
@@ -355,7 +355,7 @@ int main(int argc, char* args[]) {
         //ellipseRGBA(renderer, moon.x(), moon.y(), r_abs2, r_abs2, 0, 0, 0, 255);
         SDL_RenderPresent(renderer);
 #ifdef LUMAX_OUTPUT
-        Renderer::sendPointsToLumax(lumaxHandle, lumaxRenderer, 2000);
+        renderer::sendPointsToLumax(lumaxHandle, lumaxRenderer, 2000);
 #endif
 
         // Timer related stuff
@@ -390,10 +390,11 @@ int main(int argc, char* args[]) {
 
 #ifdef LUMAX_OUTPUT
     Lumax_StopFrame(lumaxHandle);
+    Lumax_CloseDevice(lumaxHandle);
 #endif
 
     // Destroy the various items
-    sdl::auxiliary::Utilities::cleanup(renderer, window);
+    sdl::auxiliary::utilities::cleanup(renderer, window);
     IMG_Quit();
     SDL_Quit();
 

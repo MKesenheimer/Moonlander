@@ -1,12 +1,12 @@
 /*
- *  Lander.h
+ *  lander.h
  *  Created by Matthias Kesenheimer on 11.01.12.
  *  Copyright 2012. All rights reserved.
  */
 #pragma once
-#include "GameLibrary/Object.h"
+#include "GameLibrary/object.h"
 
-class Lander : public Object {
+class Lander : public object {
 public:
     Lander(float x, float y, float vx, float vy, float hsize, float vsize, float angle, float spin, int maxFuel = 2000);
 

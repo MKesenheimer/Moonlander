@@ -1,6 +1,6 @@
-#include "Moon.h"
+#include "moon.h"
 
-Moon::Moon(float x, float y, float hsize, float vsize, float angle) : Object(x, y, 0, 0, hsize, vsize, angle) {
+Moon::Moon(float x, float y, float hsize, float vsize, float angle) : object(x, y, 0, 0, hsize, vsize, angle) {
     newPoint(-0.50, -0.80, 0, 255, 255);
     newPoint(-0.39, -0.60, 0, 255, 255);
     newPoint(-0.36, -0.62, 0, 255, 255);

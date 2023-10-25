@@ -1,4 +1,4 @@
-#include "Character.h"
+#include "character.h"
 #include <cmath>
 #include <map>
 #include <tuple>
@@ -269,7 +269,7 @@ const std::array<std::array<std::array<v, xsteps>, ysteps>, 36> mat = {
 };
 
 Character::Character(float x, float y, float hsize, float vsize, char c, int r, int g, int b) 
-    : Object(x, y, 0, 0, hsize, vsize, 0, 0, 1, 1) {
+    : object(x, y, 0, 0, hsize, vsize, 0, 0, 1, 1) {
     int selector = 0;
     switch (c) {
     case '0':

@@ -4,7 +4,7 @@ Remake of the arcade game "Lunar Lander" for a show laser system. If no show las
 ## Requirements
 The SDL library must be present. On a mac, the SDL library can be installed with the following command:
 ```
-sudo port install libsdl2 libsdl2_gfx libsdl2_image libsdl2_mixer libsdl2_ttf libftd2xx
+sudo port install libsdl2 libsdl2_gfx libsdl2_image libsdl2_mixer libsdl2_ttf libftdi1
 ```
 
 ## Blogpost
