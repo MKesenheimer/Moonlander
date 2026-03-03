@@ -1,10 +1,10 @@
+[submodule "libs/lumax"]
+	path = libs/lumax
+	url = https://github.com/MKesenheimer/lumax.git
+	branch = master-ftdi
 [submodule "SDLTools"]
 	path = SDLTools
 	url = https://github.com/MKesenheimer/SDLTools.git
 [submodule "GameLibrary"]
 	path = GameLibrary
-	url = git@github.com:MKesenheimer/GameLibrary.git
-[submodule "libs/lumax"]
-	path = libs/lumax
-	url = https://github.com/MKesenheimer/lumax.git
-	branch = master-ftdi
+	url = https://github.com/MKesenheimer/GameLibrary.git
